@@ -22,10 +22,10 @@ symchar   ([^\s\\"'()])
 
 _         \s*
 """,
-                         lit_char = lambda c: '\\' + c,
-                         cat      = lambda *xs: ''.join(xs),
-                         quote    = lambda x: ('quote', x),
-                         chunk    = chunk)
+                 lit_char = lambda c: '\\' + c,
+                 cat      = lambda *xs: ''.join(xs),
+                 quote    = lambda x: ('quote', x),
+                 chunk    = chunk)
 
 ## ichbins('hi')
 #. ('hi',)
@@ -64,7 +64,7 @@ nums
 
 num    ([0-9]*) :int
 """,
-                      int=int)
+              int=int)
 sum_nums = lambda s: sum(nums(s))
 
 ## sum_nums('10,30,43')
@@ -149,8 +149,8 @@ qchars
 qchar    ([^"])
 qchar    "" :dquote
 """, 
-                 cat = cat,
-                 dquote = lambda: '"')
+             cat = cat,
+             dquote = lambda: '"')
 
 ## csv('')
 #. ('',)
