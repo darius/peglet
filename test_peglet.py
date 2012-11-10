@@ -35,8 +35,6 @@ def empty():               return '<>'
 def literal(regex):        return '/%s/' % regex
 def rule_ref(name):        return '<%s>' % name
 
-wrap = lambda *vals: vals
-
 ## p(metagrammar, ' hello = bargle. goodbye = hey there.aloha=.')
 #. ('hello: <bargle>+<>', 'goodbye: <hey>+<there>+<>', 'aloha: <>')
 ## p(metagrammar, ' hello arg = bargle.')
@@ -47,7 +45,7 @@ wrap = lambda *vals: vals
 bal = r"""
 allbalanced   _ bal !.
 _             \s*
-bal           \( _ bal \) _ :wrap bal
+bal           \( _ bal \) _ :chunk bal
 bal           (\w+) _
 bal
 """
@@ -59,7 +57,7 @@ bal
 curl = r"""
 one_expr   _ expr !.
 _          \s*
-expr       { _ exprs } _ :wrap
+expr       { _ exprs } _ :chunk
 expr       ([^{}\s]+) _
 exprs      expr exprs
 exprs
