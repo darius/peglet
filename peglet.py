@@ -93,7 +93,7 @@ def maybe(parse, *args, **kwargs):
 
 # Some often-used actions:
 def chunk(*xs): return xs
-def cat(*strs): ''.join(strs)
+def cat(*strs): return ''.join(strs)
 
 # A raw-access action:
 def position(rules, text, utmost, st):
