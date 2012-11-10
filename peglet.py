@@ -43,7 +43,7 @@ def Parser(grammar, **actions):
         if tokens: rules[tokens[0]].append(tokens[1:])
 
     def parse(text, rule=lines[0].split()[0]):
-        "Parse a prefix of text; return a results tuple or Unparsable."
+        "Parse a prefix of text; return a results tuple or raise Unparsable."
         utmost = [0]
         st = parse_rule(rule, text, utmost, State(0, ()))
         if st: return st.vals
