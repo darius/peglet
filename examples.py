@@ -1,6 +1,6 @@
-from peglet import Grammar, maybe, chunk, cat, position
+from peglet import Parser, maybe, chunk, cat, position
 
-ichbins = Grammar(r"""
+ichbins = Parser(r"""
 main      _ sexp
 
 sexp      \\(.)         _ :lit_char
@@ -38,7 +38,7 @@ _         \s*
 
 # From http://www.inf.puc-rio.br/~roberto/lpeg/
 
-as_and_bs = Grammar(r"""
+as_and_bs = Parser(r"""
 allS   S !.
 
 S   a B
@@ -55,7 +55,7 @@ B   a B B
 ## as_and_bs("abaabbbbaa")
 #. ()
 
-nums = Grammar(r"""
+nums = Parser(r"""
 allnums   nums !.
 
 nums   num , nums
@@ -70,7 +70,7 @@ sum_nums = lambda s: sum(nums(s))
 ## sum_nums('10,30,43')
 #. 83
 
-one_word = Grammar("word \w+ ::position", **globals())
+one_word = Parser("word \w+ ::position", **globals())
 
 # TODO lpeg gives the position after the match, or None:
 ## one_word('hello')
@@ -83,7 +83,7 @@ one_word = Grammar("word \w+ ::position", **globals())
 #.     else: raise Unparsable(rule, (text[:utmost[0]], text[utmost[0]:]))
 #. Unparsable: ('word', ('', ' '))
 
-namevalues = Grammar(r"""
+namevalues = Parser(r"""
 list    _ pairs !.
 pairs   pair pairs
 pairs 
@@ -98,7 +98,7 @@ namevalues_dict = lambda s: dict(namevalues(s))
 # Splitting a string. But with lpeg it's parametric over a pattern p.
 # NB this assumes p doesn't match ''.
 
-splitting = Grammar(r"""
+splitting = Parser(r"""
 split   p split
 split   chunk :cat split
 split   
@@ -112,7 +112,7 @@ p       \s
 # Searching for a pattern: also parameterized by p.
 # (skipped)
 
-balanced_parens = Grammar(r"""
+balanced_parens = Parser(r"""
 bal   \( cs \)
 cs    c cs
 cs    
@@ -126,7 +126,7 @@ c     bal
 
 # gsub: another parameterized one
 
-gsub = lambda text, replacement: ''.join(Grammar(r"""
+gsub = lambda text, replacement: ''.join(Parser(r"""
 gsub    p gsub
 gsub    (.) gsub
 gsub    
@@ -136,7 +136,7 @@ p       WHEE :replace
 ## gsub('hi there WHEEWHEE to you WHEEEE', 'GLARG')
 #. 'hi there GLARGGLARG to you GLARGEE'
 
-csv = Grammar(r"""
+csv = Parser(r"""
 record   field fields $
 fields   , field fields
 fields   

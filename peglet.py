@@ -3,7 +3,7 @@ import collections, re
 # A parsing state: a position in the input text and a values tuple.
 State = collections.namedtuple('State', 'pos vals'.split())
 
-def Grammar(grammar, **actions):
+def Parser(grammar, **actions):
     r"""Make a parsing function from a PEG grammar. You supply the
     grammar as a string with one line per alternative, like the
     example grammar below. Each line starts with the name of the rule
@@ -22,7 +22,7 @@ def Grammar(grammar, **actions):
     default the first in the grammar.) It doesn't necessarily match
     the whole input, just a prefix.
 
-    >>> parse_s_expression = Grammar(r'''
+    >>> parse_s_expression = Parser(r'''
     ... one_expr   _ expr !.
     ... _          \s*
     ... expr       \( _ exprs \) _ :wrap

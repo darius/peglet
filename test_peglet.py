@@ -1,10 +1,10 @@
 from peglet import *
 
-## Grammar('x')('')
+## Parser('x')('')
 #. ()
 
 def p(grammar, text, **kwargs):
-    parse = Grammar(grammar, **globals())
+    parse = Parser(grammar, **globals())
     try: 
         return parse(text, **kwargs)
     except Unparsable, e:
