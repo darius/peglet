@@ -16,3 +16,6 @@ also a combinator library using similar ideas (compromising on goal
 
 See https://github.com/darius/sketchbook/tree/master/parsing
 for some early sketches.
+
+See http://www.udacity.com/wiki/CS212%20Unit%203%20Code?course=cs212#grammarpy
+and http://www.inf.puc-rio.br/~roberto/lpeg/ for some influences.
