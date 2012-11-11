@@ -39,7 +39,7 @@ _         \s*
 # From http://www.inf.puc-rio.br/~roberto/lpeg/
 
 as_and_bs = Parser(r"""
-allS   S !.
+allS   S $
 
 S   a B
 S   b A
@@ -56,7 +56,7 @@ B   a B B
 #. ()
 
 nums = Parser(r"""
-allnums   nums !.
+allnums   nums $
 
 nums   num , nums
 nums   num
@@ -84,7 +84,7 @@ one_word = Parser("word \w+ ::position", **globals())
 #. Unparsable: ('word', ('', ' '))
 
 namevalues = Parser(r"""
-list    _ pairs !.
+list    _ pairs $
 pairs   pair pairs
 pairs 
 pair    name = _ name [,;]? _   :chunk
