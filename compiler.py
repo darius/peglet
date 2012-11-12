@@ -18,7 +18,6 @@ def Parser(grammar):
         yield 'def rule_%s(text, far, i):' % rule
         for a, alternative in enumerate(alternatives):
             yield '    def alt_%s(text, far, i):' % a
-            yield '        vals = ()'
             for line in comp_alternative(alternative):
                 yield '        ' + line
         yield ('    return '
@@ -26,6 +25,7 @@ def Parser(grammar):
                              for a, _ in enumerate(alternatives)))
 
     def comp_alternative(alternative):
+        yield 'vals = ()'
         for token in alternative:
             for line in comp_token(token):
                 yield line
