@@ -1,6 +1,6 @@
 import collections
 
-def Parser(grammar, **actions):
+def Parser(grammar):
     # Map the name of each grammar rule to a list of its alternatives.
     rules = collections.defaultdict(list)
     lines = [line for line in grammar.splitlines() if line.strip()]
