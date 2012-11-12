@@ -15,8 +15,7 @@ def Parser(grammar, **actions):
                 yield line
 
     def comp_rule(rule, alternatives):
-        # XXX make sure rule names don't shadow python built-ins
-        yield 'def %s(text, far, i):' % rule
+        yield 'def rule_%s(text, far, i):' % rule
         for a, alternative in enumerate(alternatives):
             yield '    def alt_%s(text, far, i):' % a
             yield '        vals = ()'
@@ -46,7 +45,7 @@ def Parser(grammar, **actions):
             yield '    return i, vals'
             yield 'if inverted(text, far, i, vals): return None'
         elif token in rules:
-            yield 'st = %s(text, far, i)' % token
+            yield 'st = rule_%s(text, far, i)' % token
             yield 'if st is None: return None'
             yield 'i, vals = st[0], vals + st[1]'
         else:
@@ -59,15 +58,17 @@ def Parser(grammar, **actions):
     return '\n'.join(comp())
 
 ## exec(nums_grammar)
-## num('42,123 hag', [0], 0)
+## rule_num('42,123 hag', [0], 0)
 #. (2, (42,))
-## nums('42,123 hag', [0], 0)
+## rule_nums('42,123 hag', [0], 0)
 #. (6, (42, 123))
-## allnums('42,123 hag', [0], 0)
+## rule_allnums('42,123', [0], 0)
+#. (6, (42, 123))
+## rule_allnums('42,123 hag', [0], 0)
 
 ## print nums_grammar
 #. import re
-#. def num(text, far, i):
+#. def rule_num(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
 #.         m = re.match('([0-9]+)', text[i:])
@@ -78,10 +79,10 @@ def Parser(grammar, **actions):
 #.         vals = (int(*vals),)
 #.         return i, vals
 #.     return alt_0(text, far, i)
-#. def allnums(text, far, i):
+#. def rule_allnums(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
-#.         st = nums(text, far, i)
+#.         st = rule_nums(text, far, i)
 #.         if st is None: return None
 #.         i, vals = st[0], vals + st[1]
 #.         def inverted(text, far, i, vals):
@@ -94,10 +95,10 @@ def Parser(grammar, **actions):
 #.         if inverted(text, far, i, vals): return None
 #.         return i, vals
 #.     return alt_0(text, far, i)
-#. def nums(text, far, i):
+#. def rule_nums(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
-#.         st = num(text, far, i)
+#.         st = rule_num(text, far, i)
 #.         if st is None: return None
 #.         i, vals = st[0], vals + st[1]
 #.         m = re.match(',', text[i:])
@@ -105,13 +106,13 @@ def Parser(grammar, **actions):
 #.         i += m.end()
 #.         far[0] = max(far[0], i)
 #.         vals += m.groups()
-#.         st = nums(text, far, i)
+#.         st = rule_nums(text, far, i)
 #.         if st is None: return None
 #.         i, vals = st[0], vals + st[1]
 #.         return i, vals
 #.     def alt_1(text, far, i):
 #.         vals = ()
-#.         st = num(text, far, i)
+#.         st = rule_num(text, far, i)
 #.         if st is None: return None
 #.         i, vals = st[0], vals + st[1]
 #.         return i, vals
