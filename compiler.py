@@ -33,7 +33,7 @@ def Parser(grammar, **actions):
 
     def comp_token(token):
         if token.startswith('::'):
-            yield 'st = %s({}, text, far, st)' % token[2:]
+            yield 'st = %s({}, text, far, (i, vals))' % token[2:]
             yield 'if st is None: return None'
             yield 'i, vals = st'
         elif token.startswith(':'):
@@ -41,7 +41,7 @@ def Parser(grammar, **actions):
         elif token.startswith('!'):
             assert False, "TBD"
         elif token in rules:
-            yield 'st = %s(text, far, st)' % token
+            yield 'st = %s(text, far, (i, vals))' % token
             yield 'if st is None: return None'
             yield 'i, vals = st'
         else:
@@ -50,6 +50,8 @@ def Parser(grammar, **actions):
             yield 'i += m.end()'
             yield 'far[0] = max(far[0], i)'
             yield 'vals += m.groups()'
+
+    return '\n'.join(comp())
 
 ## exec(nums_grammar)
 ## num('42', [0], 0)
@@ -71,7 +73,7 @@ def Parser(grammar, **actions):
 #. def allnums(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
-#.         st = nums(text, far, st)
+#.         st = nums(text, far, (i, vals))
 #.         if st is None: return None
 #.         i, vals = st
 #.         m = re.match('$', text[i:])
@@ -84,7 +86,7 @@ def Parser(grammar, **actions):
 #. def nums(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
-#.         st = num(text, far, st)
+#.         st = num(text, far, (i, vals))
 #.         if st is None: return None
 #.         i, vals = st
 #.         m = re.match(',', text[i:])
@@ -92,13 +94,13 @@ def Parser(grammar, **actions):
 #.         i += m.end()
 #.         far[0] = max(far[0], i)
 #.         vals += m.groups()
-#.         st = nums(text, far, st)
+#.         st = nums(text, far, (i, vals))
 #.         if st is None: return None
 #.         i, vals = st
 #.         return i, vals
 #.     def alt_1(text, far, i):
 #.         vals = ()
-#.         st = num(text, far, st)
+#.         st = num(text, far, (i, vals))
 #.         if st is None: return None
 #.         i, vals = st
 #.         return i, vals
@@ -107,8 +109,6 @@ def Parser(grammar, **actions):
 #.         return i, vals
 #.     return alt_0(text, far, i) or alt_1(text, far, i) or alt_2(text, far, i)
 #. 
-
-    return '\n'.join(comp())
 
 nums_grammar = Parser(r"""
 allnums   nums $
