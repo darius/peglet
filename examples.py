@@ -62,7 +62,7 @@ nums   num , nums
 nums   num
 nums   
 
-num    ([0-9]*) :int
+num    ([0-9]+) :int
 """,
               int=int)
 sum_nums = lambda s: sum(nums(s))
