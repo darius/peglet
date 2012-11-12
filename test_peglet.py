@@ -55,7 +55,7 @@ bal
 #. Unparsable('allbalanced', ('x ', 'y'))
 
 curl = r"""
-one_expr   _ expr !.
+one_expr   _ expr $
 _          \s*
 expr       { _ exprs } _ :chunk
 expr       ([^{}\s]+) _

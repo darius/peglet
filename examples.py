@@ -27,6 +27,9 @@ _         \s*
                  quote    = lambda x: ('quote', x),
                  chunk    = chunk)
 
+## ichbins('() (hey)', rule='sexps')
+#. ((), ('hey',))
+
 ## ichbins('hi')
 #. ('hi',)
 ## ichbins(r"""(hi '(john mccarthy) \c )""")
@@ -116,7 +119,7 @@ balanced_parens = Parser(r"""
 bal   \( cs \)
 cs    c cs
 cs    
-c     ![()] .
+c     [^()]
 c     bal
 """)
 
