@@ -15,6 +15,7 @@ def Parser(grammar, **actions):
                 yield line
 
     def comp_rule(rule, alternatives):
+        # XXX make sure rule names don't shadow python built-ins
         yield 'def %s(text, far, i):' % rule
         for a, alternative in enumerate(alternatives):
             yield '    def alt_%s(text, far, i):' % a
@@ -43,8 +44,7 @@ def Parser(grammar, **actions):
             for line in comp_token(token[1:]):
                 yield '    ' + line
             yield '    return i, vals'
-            yield 'st = inverted(text, far, i, vals)'
-            yield 'if st: return None'
+            yield 'if inverted(text, far, i, vals): return None'
         elif token in rules:
             yield 'st = %s(text, far, i)' % token
             yield 'if st is None: return None'
@@ -64,7 +64,6 @@ def Parser(grammar, **actions):
 ## nums('42,123 hag', [0], 0)
 #. (6, (42, 123))
 ## allnums('42,123 hag', [0], 0)
-#  (2, (42,))
 
 ## print nums_grammar
 #. import re
@@ -92,8 +91,7 @@ def Parser(grammar, **actions):
 #.             far[0] = max(far[0], i)
 #.             vals += m.groups()
 #.             return i, vals
-#.         st = inverted(text, far, i, vals)
-#.         if st: return None
+#.         if inverted(text, far, i, vals): return None
 #.         return i, vals
 #.     return alt_0(text, far, i)
 #. def nums(text, far, i):
