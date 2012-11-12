@@ -10,6 +10,7 @@ def Parser(grammar, **actions):
         if tokens: rules[tokens[0]].append(tokens[1:])
 
     def comp():
+        yield 'import re'
         for rule, alternatives in rules.items():
             for line in comp_rule(rule, alternatives):
                 yield line
@@ -41,9 +42,9 @@ def Parser(grammar, **actions):
         elif token.startswith('!'):
             assert False, "TBD"
         elif token in rules:
-            yield 'st = %s(text, far, (i, vals))' % token
+            yield 'st = %s(text, far, i)' % token
             yield 'if st is None: return None'
-            yield 'i, vals = st'
+            yield 'i, vals = st[0], vals + st[1]'
         else:
             yield 'm = re.match(%r, text[i:])' % token
             yield 'if not m: return None'
@@ -54,11 +55,12 @@ def Parser(grammar, **actions):
     return '\n'.join(comp())
 
 ## exec(nums_grammar)
-## num('42', [0], 0)
-#. (2, (42,))
+## nums('42,123', [0], 0)
+#. (6, (42, 123))
 #  (2, (42,))
 
 ## print nums_grammar
+#. import re
 #. def num(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
@@ -73,9 +75,9 @@ def Parser(grammar, **actions):
 #. def allnums(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
-#.         st = nums(text, far, (i, vals))
+#.         st = nums(text, far, i)
 #.         if st is None: return None
-#.         i, vals = st
+#.         i, vals = st[0], vals + st[1]
 #.         m = re.match('$', text[i:])
 #.         if not m: return None
 #.         i += m.end()
@@ -86,23 +88,23 @@ def Parser(grammar, **actions):
 #. def nums(text, far, i):
 #.     def alt_0(text, far, i):
 #.         vals = ()
-#.         st = num(text, far, (i, vals))
+#.         st = num(text, far, i)
 #.         if st is None: return None
-#.         i, vals = st
+#.         i, vals = st[0], vals + st[1]
 #.         m = re.match(',', text[i:])
 #.         if not m: return None
 #.         i += m.end()
 #.         far[0] = max(far[0], i)
 #.         vals += m.groups()
-#.         st = nums(text, far, (i, vals))
+#.         st = nums(text, far, i)
 #.         if st is None: return None
-#.         i, vals = st
+#.         i, vals = st[0], vals + st[1]
 #.         return i, vals
 #.     def alt_1(text, far, i):
 #.         vals = ()
-#.         st = num(text, far, (i, vals))
+#.         st = num(text, far, i)
 #.         if st is None: return None
-#.         i, vals = st
+#.         i, vals = st[0], vals + st[1]
 #.         return i, vals
 #.     def alt_2(text, far, i):
 #.         vals = ()
