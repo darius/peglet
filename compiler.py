@@ -1,4 +1,4 @@
-import collections, re
+import collections
 
 def Parser(grammar, **actions):
     # Map the name of each grammar rule to a list of its alternatives.
