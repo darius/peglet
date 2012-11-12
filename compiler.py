@@ -1,5 +1,4 @@
 import collections, re
-# from itertools import count
 
 def Parser(grammar, **actions):
     # Map the name of each grammar rule to a list of its alternatives.
@@ -16,7 +15,7 @@ def Parser(grammar, **actions):
                 yield line
 
     def comp_rule(rule, alternatives):
-        yield "def %s(text, far, i):" % rule
+        yield 'def %s(text, far, i):' % rule
         for a, alternative in enumerate(alternatives):
             yield '    def alt_%s(text, far, i):' % a
             yield '        vals = ()'
