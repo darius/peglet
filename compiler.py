@@ -40,7 +40,12 @@ def Parser(grammar, **actions):
         elif token.startswith(':'):
             yield 'vals = (%s(*vals),)' % token[1:]
         elif token.startswith('!'):
-            assert False, "TBD"
+            yield 'def inverted(text, far, i, vals):'
+            for line in comp_token(token[1:]):
+                yield '    ' + line
+            yield '    return i, vals'
+            yield 'st = inverted(text, far, i, vals)'
+            yield 'if st: return None'
         elif token in rules:
             yield 'st = %s(text, far, i)' % token
             yield 'if st is None: return None'
@@ -55,8 +60,11 @@ def Parser(grammar, **actions):
     return '\n'.join(comp())
 
 ## exec(nums_grammar)
-## nums('42,123', [0], 0)
+## num('42,123 hag', [0], 0)
+#. (2, (42,))
+## nums('42,123 hag', [0], 0)
 #. (6, (42, 123))
+## allnums('42,123 hag', [0], 0)
 #  (2, (42,))
 
 ## print nums_grammar
@@ -78,11 +86,15 @@ def Parser(grammar, **actions):
 #.         st = nums(text, far, i)
 #.         if st is None: return None
 #.         i, vals = st[0], vals + st[1]
-#.         m = re.match('$', text[i:])
-#.         if not m: return None
-#.         i += m.end()
-#.         far[0] = max(far[0], i)
-#.         vals += m.groups()
+#.         def inverted(text, far, i, vals):
+#.             m = re.match('.', text[i:])
+#.             if not m: return None
+#.             i += m.end()
+#.             far[0] = max(far[0], i)
+#.             vals += m.groups()
+#.             return i, vals
+#.         st = inverted(text, far, i, vals)
+#.         if st: return None
 #.         return i, vals
 #.     return alt_0(text, far, i)
 #. def nums(text, far, i):
@@ -113,7 +125,7 @@ def Parser(grammar, **actions):
 #. 
 
 nums_grammar = Parser(r"""
-allnums   nums $
+allnums   nums !.
 
 nums   num , nums
 nums   num
