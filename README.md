@@ -10,9 +10,9 @@ some new situation like a new programming language;
 
 3. that inexpert programmers can follow without too much pain. 
 
-So I aimed for one page of clear code not using combinators. There's
-also a combinator library using similar ideas (compromising on goal
-3), not checked in here so far.
+So I aimed for one page of clear code not using combinators. Some bits
+that couldn't fit those constraints (mainly #3) overflowed into a
+combinator library [parson](https://github.com/darius/parson).
 
 See https://github.com/darius/sketchbook/tree/master/parsing
 for some early sketches.
