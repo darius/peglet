@@ -75,7 +75,6 @@ sum_nums = lambda s: sum(nums(s))
 
 one_word = Parser("word \w+ ::position", **globals())
 
-# TODO lpeg gives the position after the match, or None:
 ## one_word('hello')
 #. (5,)
 ## one_word('hello there')
