@@ -1,7 +1,8 @@
-import collections, re
+"""
+Parsing with PEGs, or a minimal usable subset thereof.
+"""
 
-# A parsing state: a position in the input text and a values tuple.
-State = collections.namedtuple('State', 'pos vals'.split())
+import collections, re
 
 def Parser(grammar, **actions):
     r"""Make a parsing function from a PEG grammar. You supply the
@@ -12,8 +13,13 @@ def Parser(grammar, **actions):
     negation: !foo successfully parses when foo *fails* to parse.)
 
     Results get added by regex captures and transformed by actions
-    (which are named like ':wrap' below; to say what 'wrap' means
+    (which are named like ':hug' below; to say what 'hug' means
     here, make it a keyword argument).
+
+    A regex token in the grammar either starts with '/' or is a
+    non-identifier token. An identifier that's not a defined rule name
+    is an error. (So, when you write an incomplete grammar, you get a
+    BadGrammar exception instead of a failure to parse.)
 
     Actions named like '::action' get raw access to the parsing state.
 
@@ -25,75 +31,86 @@ def Parser(grammar, **actions):
     >>> parse_s_expression = Parser(r'''
     ... one_expr   _ expr !.
     ... _          \s*
-    ... expr       \( _ exprs \) _ :wrap
+    ... expr       \( _ exprs \) _ :hug
     ... expr       ([^()\s]+) _
     ... exprs      expr exprs
-    ... exprs      ''',             wrap = lambda *vals: vals)
+    ... exprs      ''',             hug = lambda *vals: vals)
     >>> parse_s_expression('  (hi (john mccarthy) (()))')
     (('hi', ('john', 'mccarthy'), ((),)),)
     >>> parse_s_expression('(too) (many) (exprs)')
     Traceback (most recent call last):
     Unparsable: ('one_expr', ('(too) ', '(many) (exprs)'))
     """
-    # Map the name of each grammar rule to a list of its alternatives.
     rules = collections.defaultdict(list)
     lines = [line for line in grammar.splitlines() if line.strip()]
     for line in lines:
         tokens = line.split()
         if tokens: rules[tokens[0]].append(tokens[1:])
+    first = lines[0].split()[0]
+    return lambda text, rule=first: _parse(rules, actions, rule, text)
 
-    def parse(text, rule=lines[0].split()[0]):
-        "Parse a prefix of text; return a results tuple or raise Unparsable."
-        utmost = [0]
-        st = parse_rule(rule, text, utmost, State(0, ()))
-        if st: return st.vals
-        else: raise Unparsable(rule, (text[:utmost[0]], text[utmost[0]:]))
+# A parsing state: a position in the input text and a values tuple.
+State = collections.namedtuple('State', 'pos vals'.split())
 
-    # Each parsing function starts from a state st and returns either
-    # None (failure) or an updated state. We also track utmost: a
-    # mutable box holding the rightmost position positively reached.
+def _parse(rules, actions, rule, text):
+    # Each parsing function starts from a pos in text and returns
+    # either None (failure) or an updated state. We also track utmost:
+    # a mutable box holding the rightmost position positively reached.
 
-    def parse_rule(name, text, utmost, st):
+    memos = {}
+    def parse_rule(name, utmost, pos):
+        try: return memos[name, pos]
+        except KeyError:
+            result = memos[name, pos] = really_parse_rule(name, utmost, pos)
+            return result
+
+    def really_parse_rule(name, utmost, pos):
         for alternative in rules[name]:
-            st2 = parse_sequence(alternative, text, utmost, st)
-            if st2: return st2
+            st = parse_sequence(alternative, utmost, pos)
+            if st: return st
         return None
 
-    def parse_sequence(tokens, text, utmost, st):
+    def parse_sequence(tokens, utmost, pos):
+        st = State(pos, ())
         for token in tokens:
-            st = parse_token(token, text, utmost, st)
+            st = parse_token(token, utmost, st)
             if not st: break
         return st
 
-    def parse_token(token, text, utmost, st):
+    def parse_token(token, utmost, st):
         if token.startswith('::'):
             return actions[token[2:]](rules, text, utmost, st)
         elif token.startswith(':'):
             return State(st.pos, (actions[token[1:]](*st.vals),))
         elif token.startswith('!'):
-            return None if parse_token(token[1:], text, [0], st) else st
+            return None if parse_token(token[1:], [0], st) else st
         elif token in rules:
-            st2 = parse_rule(token, text, utmost, State(st.pos, ()))
+            st2 = parse_rule(token, utmost, st.pos)
             return State(st2.pos, st.vals + st2.vals) if st2 else None
         else:
+            if re.match(r'[A-Za-z_]\w*$', token):
+                raise BadGrammar("Missing rule: %s" % token)
+            if re.match(r'/.', token): token = token[1:]
             m = re.match(token, text[st.pos:])
             if not m: return None
             utmost[0] = max(utmost[0], st.pos + m.end())
             return State(st.pos + m.end(), st.vals + m.groups())
 
-    return parse
+    utmost = [0]
+    st = parse_rule(rule, utmost, 0)
+    if st: return st.vals
+    else: raise Unparsable(rule, (text[:utmost[0]], text[utmost[0]:]))
 
 class Unparsable(Exception): pass
+class BadGrammar(Exception): pass
 
-def maybe(parse, *args, **kwargs):
-    try:
-        return parse(*args, **kwargs)
-    except Unparsable:
-        return None
+def maybe(parse, *args, **kwargs): # XXX rename to 'attempt'?
+    try: return parse(*args, **kwargs)
+    except Unparsable: return None
 
 # Some often-used actions:
-def chunk(*xs): return xs
-def cat(*strs): return ''.join(strs)
+def hug(*xs): return xs
+def join(*strs): return ''.join(strs)
 
 # A raw-access action:
 def position(rules, text, utmost, st):

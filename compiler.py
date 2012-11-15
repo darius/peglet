@@ -1,4 +1,4 @@
-import collections
+import collections, re
 
 def Parser(grammar):
     # Map the name of each grammar rule to a list of its alternatives.
@@ -49,6 +49,7 @@ def Parser(grammar):
             yield 'if st is None: return None'
             yield 'i, vals = st[0], vals + st[1]'
         else:
+            if re.match(r'/.', token): token = token[1:]
             yield 'm = re.match(%r, text[i:])' % token
             yield 'if not m: return None'
             yield 'i += m.end()'

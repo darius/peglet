@@ -1,13 +1,13 @@
-from peglet import Parser, maybe, chunk, cat, position
+from peglet import Parser, maybe, hug, join, position
 
 ichbins = Parser(r"""
 main      _ sexp
 
 sexp      \\(.)         _ :lit_char
-sexp      " qchars "    _ :cat
-sexp      symchars      _ :cat
+sexp      " qchars "    _ :join
+sexp      symchars      _ :join
 sexp      ' _ sexp        :quote
-sexp      \( _ sexps \) _ :chunk
+sexp      \( _ sexps \) _ :hug
 
 sexps     sexp sexps
 sexps
@@ -22,10 +22,10 @@ symchar   ([^\s\\"'()])
 
 _         \s*
 """,
-                 lit_char = lambda c: '\\' + c,
-                 cat      = lambda *xs: ''.join(xs),
+                 lit_char = ord,
+                 join     = join,
                  quote    = lambda x: ('quote', x),
-                 chunk    = chunk)
+                 hug      = hug)
 
 ## ichbins('() (hey)', rule='sexps')
 #. ((), ('hey',))
@@ -33,7 +33,7 @@ _         \s*
 ## ichbins('hi')
 #. ('hi',)
 ## ichbins(r"""(hi '(john mccarthy) \c )""")
-#. (('hi', ('quote', ('john', 'mccarthy')), '\\c'),)
+#. (('hi', ('quote', ('john', 'mccarthy')), 99),)
 ## ichbins(r""" ""  """)
 #. ('',)
 ## ichbins(r""" "hey"  """)
@@ -44,15 +44,15 @@ _         \s*
 as_and_bs = Parser(r"""
 allS   S $
 
-S   a B
-S   b A
+S   /a B
+S   /b A
 S 
 
-A   a S
-A   b A A
+A   /a S
+A   /b A A
 
-B   b S
-B   a B B
+B   /b S
+B   /a B B
 """)
 
 ## as_and_bs("abaabbbbaa")
@@ -80,17 +80,13 @@ one_word = Parser("word \w+ ::position", **globals())
 #. (5,)
 ## one_word('hello there')
 #. (5,)
-## one_word(' ')
-#. Traceback (most recent call last):
-#.   File "/home/darius/git/peglet/peglet.py", line 50, in parse
-#.     else: raise Unparsable(rule, (text[:utmost[0]], text[utmost[0]:]))
-#. Unparsable: ('word', ('', ' '))
+## maybe(one_word, ' ')
 
 namevalues = Parser(r"""
 list    _ pairs $
 pairs   pair pairs
 pairs 
-pair    name = _ name [,;]? _   :chunk
+pair    name = _ name [,;]? _   :hug
 name    (\w+) _
 _       \s*
 """, **globals())
@@ -103,7 +99,7 @@ namevalues_dict = lambda s: dict(namevalues(s))
 
 splitting = Parser(r"""
 split   p split
-split   chunk :cat split
+split   chunk :join split
 split   
 chunk   p
 chunk   (.) chunk
@@ -133,7 +129,7 @@ gsub = lambda text, replacement: ''.join(Parser(r"""
 gsub    p gsub
 gsub    (.) gsub
 gsub    
-p       WHEE :replace
+p       /WHEE :replace
 """, replace=lambda: replacement)(text))
 
 ## gsub('hi there WHEEWHEE to you WHEEEE', 'GLARG')
@@ -144,7 +140,7 @@ record   field fields $
 fields   , field fields
 fields   
 
-field    " qchars "\s* :cat
+field    " qchars "\s* :join
 field    ([^,"\n]*)
 
 qchars   qchar qchars
@@ -152,7 +148,7 @@ qchars
 qchar    ([^"])
 qchar    "" :dquote
 """, 
-             cat = cat,
+             join = join,
              dquote = lambda: '"')
 
 ## csv('')

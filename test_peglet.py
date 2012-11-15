@@ -45,7 +45,7 @@ def rule_ref(name):        return '<%s>' % name
 bal = r"""
 allbalanced   _ bal !.
 _             \s*
-bal           \( _ bal \) _ :chunk bal
+bal           \( _ bal \) _ :hug bal
 bal           (\w+) _
 bal
 """
@@ -57,7 +57,7 @@ bal
 curl = r"""
 one_expr   _ expr $
 _          \s*
-expr       { _ exprs } _ :chunk
+expr       { _ exprs } _ :hug
 expr       ([^{}\s]+) _
 exprs      expr exprs
 exprs
