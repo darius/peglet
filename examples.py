@@ -94,7 +94,7 @@ namevalues_dict = lambda s: dict(namevalues(s))
 #. {'a': 'b', 'c': 'hi', 'next': 'pi'}
 
 # Splitting a string. But with lpeg it's parametric over a pattern p.
-# NB this assumes p doesn't match ''.
+# NB this assumes p doesn't match '', and that it doesn't capture.
 
 splitting = Parser(r"""
 split   p split
