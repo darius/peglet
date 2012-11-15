@@ -39,7 +39,7 @@ def Parser(grammar, **actions):
     (('hi', ('john', 'mccarthy'), ((),)),)
     >>> parse_s_expression('(too) (many) (exprs)')
     Traceback (most recent call last):
-    Unparsable: ('one_expr', ('(too) ', '(many) (exprs)'))
+    Unparsable: ('one_expr', '(too) ', '(many) (exprs)')
     """
     rules = collections.defaultdict(list)
     lines = [line for line in grammar.splitlines() if line.strip()]
@@ -99,7 +99,7 @@ def _parse(rules, actions, rule, text):
     utmost = [0]
     st = parse_rule(rule, utmost, 0)
     if st: return st.vals
-    else: raise Unparsable(rule, (text[:utmost[0]], text[utmost[0]:]))
+    else: raise Unparsable(rule, text[:utmost[0]], text[utmost[0]:])
 
 class Unparsable(Exception): pass
 class BadGrammar(Exception): pass
