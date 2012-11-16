@@ -43,7 +43,7 @@ def Parser(grammar):
             for line in comp_token(token[1:]):
                 yield '    ' + line
             yield '    return i, vals'
-            yield 'if inverted(text, far, i, vals): return None'
+            yield 'if inverted(text, [0], i, vals): return None'
         elif token in rules:
             yield 'st = rule_%s(text, far, i)' % token
             yield 'if st is None: return None'
@@ -93,7 +93,7 @@ def Parser(grammar):
 #.             far[0] = max(far[0], i)
 #.             vals += m.groups()
 #.             return i, vals
-#.         if inverted(text, far, i, vals): return None
+#.         if inverted(text, [0], i, vals): return None
 #.         return i, vals
 #.     return alt_0(text, far, i)
 #. def rule_nums(text, far, i):
