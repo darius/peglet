@@ -17,11 +17,11 @@ def Parser(grammar):
     def comp_rule(rule, alternatives):
         yield 'def rule_%s(text, far, i):' % rule
         for a, alternative in enumerate(alternatives):
-            yield '    def alt_%s(text, far, i):' % a
+            yield '    def alt_%s(i):' % a
             for line in comp_alternative(alternative):
                 yield '        ' + line
         yield ('    return '
-               + ' or '.join('alt_%d(text, far, i)' % a
+               + ' or '.join('alt_%d(i)' % a
                              for a, _ in enumerate(alternatives)))
 
     def comp_alternative(alternative):
@@ -70,7 +70,7 @@ def Parser(grammar):
 ## print nums_grammar
 #. import re
 #. def rule_num(text, far, i):
-#.     def alt_0(text, far, i):
+#.     def alt_0(i):
 #.         vals = ()
 #.         m = re.match('([0-9]+)', text[i:])
 #.         if not m: return None
@@ -79,9 +79,9 @@ def Parser(grammar):
 #.         vals += m.groups()
 #.         vals = (int(*vals),)
 #.         return i, vals
-#.     return alt_0(text, far, i)
+#.     return alt_0(i)
 #. def rule_allnums(text, far, i):
-#.     def alt_0(text, far, i):
+#.     def alt_0(i):
 #.         vals = ()
 #.         st = rule_nums(text, far, i)
 #.         if st is None: return None
@@ -95,9 +95,9 @@ def Parser(grammar):
 #.             return i, vals
 #.         if inverted(text, [0], i, vals): return None
 #.         return i, vals
-#.     return alt_0(text, far, i)
+#.     return alt_0(i)
 #. def rule_nums(text, far, i):
-#.     def alt_0(text, far, i):
+#.     def alt_0(i):
 #.         vals = ()
 #.         st = rule_num(text, far, i)
 #.         if st is None: return None
@@ -111,16 +111,16 @@ def Parser(grammar):
 #.         if st is None: return None
 #.         i, vals = st[0], vals + st[1]
 #.         return i, vals
-#.     def alt_1(text, far, i):
+#.     def alt_1(i):
 #.         vals = ()
 #.         st = rule_num(text, far, i)
 #.         if st is None: return None
 #.         i, vals = st[0], vals + st[1]
 #.         return i, vals
-#.     def alt_2(text, far, i):
+#.     def alt_2(i):
 #.         vals = ()
 #.         return i, vals
-#.     return alt_0(text, far, i) or alt_1(text, far, i) or alt_2(text, far, i)
+#.     return alt_0(i) or alt_1(i) or alt_2(i)
 #. 
 
 nums_grammar = Parser(r"""
