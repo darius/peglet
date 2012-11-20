@@ -19,3 +19,5 @@ for some early sketches.
 
 See http://www.udacity.com/wiki/CS212%20Unit%203%20Code?course=cs212#grammarpy
 and http://www.inf.puc-rio.br/~roberto/lpeg/ for some influences.
+
+Thanks to Kragen Sitaker for ideas about the syntax.
