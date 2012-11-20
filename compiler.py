@@ -1,12 +1,25 @@
+"""
+A draft of compiling PEGs to Python code. I expect to actually use
+something like this in parson instead of peglet.
+"""
+
 import collections, re
 
 def Parser(grammar):
     # Map the name of each grammar rule to a list of its alternatives.
+
+    parts = re.split(r'\n(\w+):', '\n'+grammar)
+    if not parts: raise BadGrammar("No grammar")
+    if parts[0].strip(): raise BadGrammar("Missing left-hand-side")
     rules = collections.defaultdict(list)
-    lines = [line for line in grammar.splitlines() if line.strip()]
-    for line in lines:
-        tokens = line.split()
-        if tokens: rules[tokens[0]].append(tokens[1:])
+    for i in range(1, len(parts), 2):
+        rules[parts[i]].append(parts[i+1].split())
+
+#    rules = collections.defaultdict(list)
+#    lines = [line for line in grammar.splitlines() if line.strip()]
+#    for line in lines:
+#        tokens = line.split()
+#        rules[tokens[0]].append(tokens[1:])
 
     def comp():
         yield 'import re'
@@ -32,11 +45,11 @@ def Parser(grammar):
         yield 'return i, vals'
 
     def comp_token(token):
-        if token.startswith('::'):
+        if token.startswith('$$'):
             yield 'st = %s({}, text, far, (i, vals))' % token[2:]
             yield 'if st is None: return None'
             yield 'i, vals = st'
-        elif token.startswith(':'):
+        elif re.match(r'[$]\w+$', token):
             yield 'vals = (%s(*vals),)' % token[1:]
         elif token.startswith('!'):
             yield 'def inverted(text, far, i, vals):'
@@ -124,11 +137,11 @@ def Parser(grammar):
 #. 
 
 nums_grammar = Parser(r"""
-allnums   nums !.
+allnums:   nums !.
 
-nums   num , nums
-nums   num
-nums   
+nums:   num , nums
+nums:   num
+nums:   
 
-num    ([0-9]+) :int
+num:    ([0-9]+) $int
 """)
