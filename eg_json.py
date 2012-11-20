@@ -80,3 +80,5 @@ _:        \s*
 #. (({'hey': True},),)
 ## json_parse('[{"hey": true}, [-12.34]]')
 #. (({'hey': True}, (-12.34,)),)
+
+## maybe(json_parse, '{"hi"]')
