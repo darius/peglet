@@ -15,6 +15,7 @@ escape = escapes.get
 u_escape = lambda hex_digits: chr(hex(hex_digits))
 mk_number = float
 
+# Following http://www.json.org/
 json_parse = Parser(r"""
 start:    _ value
 
@@ -51,7 +52,7 @@ number:   int frac _       $join $mk_number
 number:   int exp _        $join $mk_number
 number:   int _            $join $mk_number
 
-int:      (-) ([1-9]) digits
+int:      (-[1-9]) digits
 int:      (-) digit
 int:      ([1-9]) digits
 int:      digit
@@ -65,6 +66,10 @@ digit:    (\d)
 _:        \s*
 """, **globals())
 
+# XXX The spec says "whitespace may be inserted between any pair of
+# tokens, but leaves open just what's a token. So is the '-' in '-1' a
+# token? Should I allow whitespace there?
+
 ## json_parse('true')
 #. (True,)
 ## json_parse('"hey"')
@@ -73,3 +78,5 @@ _:        \s*
 #. ({'hey': True},)
 ## json_parse('[{"hey": true}]')
 #. (({'hey': True},),)
+## json_parse('[{"hey": true}, [-12.34]]')
+#. (({'hey': True}, (-12.34,)),)
