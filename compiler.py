@@ -15,12 +15,6 @@ def Parser(grammar):
     for i in range(1, len(parts), 2):
         rules[parts[i]].append(parts[i+1].split())
 
-#    rules = collections.defaultdict(list)
-#    lines = [line for line in grammar.splitlines() if line.strip()]
-#    for line in lines:
-#        tokens = line.split()
-#        rules[tokens[0]].append(tokens[1:])
-
     def comp():
         yield 'import re'
         for rule, alternatives in rules.items():
