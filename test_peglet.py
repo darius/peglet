@@ -1,6 +1,6 @@
 from peglet import *
 
-## Parser('x')('')
+## Parser('x:')('')
 #. ()
 
 def p(grammar, text, **kwargs):
@@ -11,20 +11,20 @@ def p(grammar, text, **kwargs):
         return e
 
 metagrammar = r"""
-grammar         _ rules
-rules           rule rules               
-rules           rule
-rule            name = _ expr \. _         :make_rule
-expr            term \| _ expr             :alt
-expr            term
-term            factors [:] _ name         :reduce_
-term            factors
-factors         factor factors             :seq
-factors                                    :empty
-factor          '((?:\\.|[^'])*)' _        :literal
-factor          name                       :rule_ref
-name            (\w+) _
-_               \s*
+grammar:         _ rules
+rules:           rule rules               
+rules:           rule
+rule:            name = _ expr \. _         $make_rule
+expr:            term \| _ expr             $alt
+expr:            term
+term:            factors : _ name           $reduce_
+term:            factors
+factors:         factor factors             $seq
+factors:                                    $empty
+factor:          '((?:\\.|[^'])*)' _        $literal
+factor:          name                       $rule_ref
+name:            (\w+) _
+_:               \s*
 """
 
 def make_rule(name, expr): return '%s: %s' % (name, expr)
@@ -43,11 +43,11 @@ def rule_ref(name):        return '<%s>' % name
 #. ('/goodbye/+<world>+<>',)
 
 bal = r"""
-allbalanced   _ bal !.
-_             \s*
-bal           \( _ bal \) _ :hug bal
-bal           (\w+) _
-bal
+allbalanced:   _ bal !.
+_:             \s*
+bal:           \( _ bal \) _ $hug bal
+bal:           (\w+) _
+bal:
 """
 ## p(bal, '(x) y')
 #. (('x',), 'y')
@@ -55,12 +55,12 @@ bal
 #. Unparsable('allbalanced', 'x ', 'y')
 
 curl = r"""
-one_expr   _ expr $
-_          \s*
-expr       { _ exprs } _ :hug
-expr       ([^{}\s]+) _
-exprs      expr exprs
-exprs
+one_expr:   _ expr $
+_:          \s*
+expr:       { _ exprs } _ $hug
+expr:       ([^{}\s]+) _
+exprs:      expr exprs
+exprs:
 """
 ## p(curl, '')
 #. Unparsable('one_expr', '', '')
@@ -70,3 +70,16 @@ exprs
 #. ('hi',)
 ## p(curl, '{hi {there} {{}}}')
 #. (('hi', ('there',), ((),)),)
+
+multiline_rules = r"""
+hi:   /this /is
+      /a /rule
+hi:   /or /this
+"""
+
+## p(multiline_rules, "thisisarule")
+#. ()
+## p(multiline_rules, "orthis")
+#. ()
+## p(multiline_rules, "thisisnot")
+#. Unparsable('hi', 'thisis', 'not')

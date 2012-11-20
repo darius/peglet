@@ -29,12 +29,12 @@ def Parser(grammar, **actions):
     the whole input, just a prefix.
 
     >>> parse_s_expression = Parser(r'''
-    ... one_expr   _ expr !.
-    ... _          \s*
-    ... expr       \( _ exprs \) _ :hug
-    ... expr       ([^()\s]+) _
-    ... exprs      expr exprs
-    ... exprs      ''',             hug = lambda *vals: vals)
+    ... one_expr:   _ expr !.
+    ... _:          \s*
+    ... expr:       \( _ exprs \) _ $hug
+    ... expr:       ([^()\s]+) _
+    ... exprs:      expr exprs
+    ... exprs:      ''',             hug = lambda *vals: vals)
     >>> parse_s_expression('  (hi (john mccarthy) (()))')
     (('hi', ('john', 'mccarthy'), ((),)),)
     >>> parse_s_expression('(too) (many) (exprs)')
@@ -42,12 +42,12 @@ def Parser(grammar, **actions):
     Unparsable: ('one_expr', '(too) ', '(many) (exprs)')
     """
     rules = collections.defaultdict(list)
-    lines = [line for line in grammar.splitlines() if line.strip()]
-    for line in lines:
-        tokens = line.split()
-        if tokens: rules[tokens[0]].append(tokens[1:])
-    first = lines[0].split()[0]
-    return lambda text, rule=first: _parse(rules, actions, rule, text)
+    parts = re.split(r'\n(\w+):', '\n'+grammar)
+    if not parts: raise BadGrammar("No grammar")
+    if parts[0].strip(): raise BadGrammar("Missing left-hand-side")
+    for i in range(1, len(parts), 2):
+        rules[parts[i]].append(parts[i+1].split())
+    return lambda text, rule=parts[1]: _parse(rules, actions, rule, text)
 
 # A parsing state: a position in the input text and a values tuple.
 State = collections.namedtuple('State', 'pos vals'.split())
@@ -78,9 +78,9 @@ def _parse(rules, actions, rule, text):
         return st
 
     def parse_token(token, utmost, st):
-        if token.startswith('::'):
+        if token.startswith('$$'):
             return actions[token[2:]](rules, text, utmost, st)
-        elif token.startswith(':'):
+        elif re.match(r'[$]\w+$', token):
             return State(st.pos, (actions[token[1:]](*st.vals),))
         elif token.startswith('!'):
             return None if parse_token(token[1:], [0], st) else st
