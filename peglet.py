@@ -13,7 +13,7 @@ def Parser(grammar, **actions):
     negation: !foo successfully parses when foo *fails* to parse.)
 
     Results get added by regex captures and transformed by actions
-    (which are named like ':hug' below; to say what 'hug' means
+    (which are named like '$hug' below; to say what 'hug' means
     here, make it a keyword argument).
 
     A regex token in the grammar either starts with '/' or is a
@@ -21,7 +21,7 @@ def Parser(grammar, **actions):
     is an error. (So, when you write an incomplete grammar, you get a
     BadGrammar exception instead of a failure to parse.)
 
-    Actions named like '::action' get raw access to the parsing state.
+    Actions named like '$$action' get raw access to the parsing state.
 
     The parsing function maps a string a results tuple or raises
     Unparsable. (It can optionally take a rule name to start from, by
