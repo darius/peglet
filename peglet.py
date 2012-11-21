@@ -20,7 +20,7 @@ def Parser(grammar, **actions):
     A regex token in the grammar either starts with '/' or is a
     non-identifier token. An identifier that's not a defined rule name
     is an error. (So, when you write an incomplete grammar, you get a
-    BadGrammar exception instead of a failure to parse.)
+    BadGrammar exception instead of an incorrect parse.)
 
     Actions named like '::action' get raw access to the parsing state.
 
