@@ -4,7 +4,7 @@ Example: parse regular expressions.
 
 from peglet import *
 
-empty    = lambda: '<>'
+empty    = lambda: '""'
 chain    = lambda p, q: '(%s %s)' % (p, q)
 either   = lambda p, q: '(%s|%s)' % (p, q)
 star     = lambda p: '(%s)*' % p
@@ -43,7 +43,7 @@ char    = \\(.)
 """, **globals())
 
 ## print regex_parse('a[xy]z()*|dc..hello')[0]
-#. (('a' ([xy] ('z' (<>)*)))|('d' ('c' (. (. ('h' ('e' ('l' ('l' 'o')))))))))
+#. (('a' ([xy] ('z' ("")*)))|('d' ('c' (. (. ('h' ('e' ('l' ('l' 'o')))))))))
 #. 
 
 ## maybe(regex_parse, '{"hi"](')
