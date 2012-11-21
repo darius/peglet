@@ -1,26 +1,26 @@
 from peglet import Parser, maybe, hug, join, position
 
 ichbins = Parser(r"""
-main:      _ sexp
+main     =  _ sexp
 
-sexp:      \\(.)         _ $lit_char
-sexp:      " qchars "    _ $join
-sexp:      symchars      _ $join
-sexp:      ' _ sexp        $quote
-sexp:      \( _ sexps \) _ $hug
+sexp     =  \\(.)         _ :lit_char
+         |  " qchars "    _ :join
+         |  symchars      _ :join
+         |  ' _ sexp        :quote
+         |  \( _ sexps \) _ :hug
 
-sexps:     sexp sexps
-sexps:
+sexps    =  sexp sexps
+         |
 
-qchars:    \\(.) qchars
-qchars:    ([^"]) qchars
-qchars:    
+qchars   =  \\(.) qchars
+         |  ([^"]) qchars
+         | 
 
-symchars:  symchar symchars
-symchars:  symchar
-symchar:   ([^\s\\"'()])
+symchars =  symchar symchars
+         |  symchar
+symchar  =  ([^\s\\"'()])
 
-_:         \s*
+_        =  \s*
 """,
                  lit_char = ord,
                  join     = join,
@@ -42,30 +42,30 @@ _:         \s*
 # From http://www.inf.puc-rio.br/~roberto/lpeg/
 
 as_and_bs = Parser(r"""
-allS:   S $
+allS = S $
 
-S:   /a B
-S:   /b A
-S: 
+S    = /a B
+     | /b A
+     |
 
-A:   /a S
-A:   /b A A
+A    = /a S
+     | /b A A
 
-B:   /b S
-B:   /a B B
+B    = /b S
+     | /a B B
 """)
 
 ## as_and_bs("abaabbbbaa")
 #. ()
 
 nums = Parser(r"""
-allnums:   nums $
+allnums =   nums $
 
-nums:   num , nums
-nums:   num
-nums:   
+nums    = num , nums
+        | num
+        | 
 
-num:    ([0-9]+) $int
+num     = ([0-9]+) :int
 """,
               int=int)
 sum_nums = lambda s: sum(nums(s))
@@ -73,7 +73,7 @@ sum_nums = lambda s: sum(nums(s))
 ## sum_nums('10,30,43')
 #. 83
 
-one_word = Parser("word: \w+ $$position", position=position)
+one_word = Parser("word = \w+ ::position", position=position)
 
 ## one_word('hello')
 #. (5,)
@@ -82,12 +82,12 @@ one_word = Parser("word: \w+ $$position", position=position)
 ## maybe(one_word, ' ')
 
 namevalues = Parser(r"""
-list:    _ pairs $
-pairs:   pair pairs
-pairs: 
-pair:    name = _ name [,;]? _   $hug
-name:    (\w+) _
-_:       \s*
+list   =  _ pairs $
+pairs  =  pair pairs
+       |
+pair   =  name [=] _ name [,;]? _   :hug
+name   =  (\w+) _
+_      =  \s*
 """, **globals())
 namevalues_dict = lambda s: dict(namevalues(s))
 ## namevalues_dict("a=b, c = hi; next = pi")
@@ -97,12 +97,12 @@ namevalues_dict = lambda s: dict(namevalues(s))
 # NB this assumes p doesn't match '', and that it doesn't capture.
 
 splitting = Parser(r"""
-split:   p split
-split:   chunk $join split
-split:   
-chunk:   p
-chunk:   (.) chunk
-p:       \s
+split  =  p split
+       |  chunk :join split
+       |  
+chunk  =  p
+       |  (.) chunk
+p      =  \s
 """, **globals())
 ## splitting('hello a world  is    nice    ')
 #. ('hello', 'a', 'world', 'is', 'nice')
@@ -111,11 +111,11 @@ p:       \s
 # (skipped)
 
 balanced_parens = Parser(r"""
-bal:   \( cs \)
-cs:    c cs
-cs:    
-c:     [^()]
-c:     bal
+bal  =  \( cs \)
+cs   =  c cs
+     |  
+c    =  [^()]
+     |  bal
 """)
 
 ## maybe(balanced_parens, '()')
@@ -125,27 +125,27 @@ c:     bal
 # gsub: another parameterized one
 
 gsub = lambda text, replacement: ''.join(Parser(r"""
-gsub:    p gsub
-gsub:    (.) gsub
-gsub:    
-p:       /WHEE $replace
+gsub =  p gsub
+     |  (.) gsub
+     |    
+p    =  /WHEE :replace
 """, replace=lambda: replacement)(text))
 
 ## gsub('hi there WHEEWHEE to you WHEEEE', 'GLARG')
 #. 'hi there GLARGGLARG to you GLARGEE'
 
 csv = Parser(r"""
-record:   field fields $
-fields:   , field fields
-fields:   
+record =   field fields $
+fields =   , field fields
+       |   
 
-field:    " qchars "\s* $join
-field:    ([^,"\n]*)
+field  =   " qchars "\s* :join
+       |   ([^,"\n]*)
 
-qchars:   qchar qchars
-qchars:               
-qchar:    ([^"])
-qchar:    "" $dquote
+qchars =   qchar qchars
+       |               
+qchar  =   ([^"])
+       |   "" :dquote
 """, 
              join = join,
              dquote = lambda: '"')

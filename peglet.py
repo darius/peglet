@@ -6,14 +6,15 @@ import collections, re
 
 def Parser(grammar, **actions):
     r"""Make a parsing function from a PEG grammar. You supply the
-    grammar as a string with one line per alternative, like the
-    example grammar below. Each line starts with the name of the rule
-    it defines an alternative for; each following token is a regex, a
-    rule name, or an action name. (Possibly preceded by '!' for
-    negation: !foo successfully parses when foo *fails* to parse.)
+    grammar as a string of productions like "a = b c | d", like the
+    example grammar below. All the tokens making up the productions
+    must be whitespace-separated. Each token, besides the '=' and '|'
+    is a regex, a rule name, or an action name. (Possibly preceded by
+    '!' for negation: !foo successfully parses when foo *fails* to
+    parse.)
 
     Results get added by regex captures and transformed by actions
-    (which are named like '$hug' below; to say what 'hug' means
+    (which are named like ':hug' below; to say what 'hug' means
     here, make it a keyword argument).
 
     A regex token in the grammar either starts with '/' or is a
@@ -21,7 +22,7 @@ def Parser(grammar, **actions):
     is an error. (So, when you write an incomplete grammar, you get a
     BadGrammar exception instead of a failure to parse.)
 
-    Actions named like '$$action' get raw access to the parsing state.
+    Actions named like '::action' get raw access to the parsing state.
 
     The parsing function maps a string a results tuple or raises
     Unparsable. (It can optionally take a rule name to start from, by
@@ -29,25 +30,29 @@ def Parser(grammar, **actions):
     the whole input, just a prefix.
 
     >>> parse_s_expression = Parser(r'''
-    ... one_expr:   _ expr !.
-    ... _:          \s*
-    ... expr:       \( _ exprs \) _ $hug
-    ... expr:       ([^()\s]+) _
-    ... exprs:      expr exprs
-    ... exprs:      ''',             hug = lambda *vals: vals)
+    ... one_expr = _ expr !.
+    ... _        = \s*
+    ... expr     = \( _ exprs \) _ :hug
+    ...          | ([^()\s]+) _
+    ... exprs    = expr exprs
+    ...          | ''',             hug = lambda *vals: vals)
     >>> parse_s_expression('  (hi (john mccarthy) (()))')
     (('hi', ('john', 'mccarthy'), ((),)),)
     >>> parse_s_expression('(too) (many) (exprs)')
     Traceback (most recent call last):
     Unparsable: ('one_expr', '(too) ', '(many) (exprs)')
     """
-    parts = re.split(r'\n(\w+):', '\n'+grammar) # XXX \w+ differs from [A-Za-z_]\w* below
+    parts = re.split(r'\s('+_identifier+')\s+=\s', ' '+grammar)
     if not parts: raise BadGrammar("No grammar")
-    if parts[0].strip(): raise BadGrammar("Missing left-hand-side")
-    rules = collections.defaultdict(list)
-    for i in range(1, len(parts), 2):
-        rules[parts[i]].append(parts[i+1].split())
+    if parts[0].strip(): raise BadGrammar("Missing left hand side", parts[0])
+    if len(set(parts[1::2])) != len(parts[1::2]):
+        raise BadGrammar("Multiply-defined rule(s)", grammar)
+    rules = dict((parts[i], [rhs.split()
+                             for rhs in re.split(r'\s[|](?:\s|$)', parts[i+1])])
+                 for i in range(1, len(parts), 2))
     return lambda text, rule=parts[1]: _parse(rules, actions, rule, text)
+
+_identifier = r'[A-Za-z_]\w*'
 
 # A parsing state: a position in the input text and a values tuple.
 State = collections.namedtuple('State', 'pos vals'.split())
@@ -78,9 +83,9 @@ def _parse(rules, actions, rule, text):
         return st
 
     def parse_token(token, utmost, st):
-        if token.startswith('$$'):
+        if token.startswith('::'):
             return actions[token[2:]](rules, text, utmost, st)
-        elif re.match(r'[$]\w+$', token):
+        elif re.match(r'[:]\w+$', token):
             return State(st.pos, (actions[token[1:]](*st.vals),))
         elif token.startswith('!'):
             return None if parse_token(token[1:], [0], st) else st
@@ -88,7 +93,7 @@ def _parse(rules, actions, rule, text):
             st2 = parse_rule(token, utmost, st.pos)
             return State(st2.pos, st.vals + st2.vals) if st2 else None
         else:
-            if re.match(r'[A-Za-z_]\w*$', token):
+            if re.match(_identifier+'$', token):
                 raise BadGrammar("Missing rule: %s" % token)
             if re.match(r'/.', token): token = token[1:]
             m = re.match(token, text[st.pos:])

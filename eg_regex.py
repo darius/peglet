@@ -15,30 +15,30 @@ someone  = lambda: '.'
 literal  = repr
 
 regex_parse = Parser(r"""
-start:   exp $
+start   = exp $
 
-exp:     term [|] exp    $either
-exp:     term
-exp:                     $empty
+exp     = term [|] exp    :either
+        | term
+        |                 :empty
 
-term:    factor term     $chain
-term:    factor
+term    = factor term     :chain
+        | factor
 
-factor:  primary [*]     $star
-factor:  primary [+]     $plus
-factor:  primary [?]     $optional
-factor:  primary
+factor  = primary [*]     :star
+        | primary [+]     :plus
+        | primary [?]     :optional
+        | primary
 
-primary: \( exp \)
-primary: \[ charset \]   $join $oneof
-primary: [.]             $someone
-primary: \\(.)           $literal
-primary: ([^.()*+?|[\]]) $literal
+primary = \( exp \)
+        | \[ charset \]   :join :oneof
+        | [.]             :someone
+        | \\(.)           :literal
+        | ([^.()*+?|[\]]) :literal
 
-charset: char charset
-charset: 
-char:    \\(.)
-char:    ([^\]])
+charset = char charset
+        | 
+char    = \\(.)
+        | ([^\]])
 
 """, **globals())
 
