@@ -83,7 +83,7 @@ def _parse(rules, actions, rule, text):
             return None if parse_token(token[1:], [0], st) else st
         elif token in rules:
             st2 = parse_rule(token, utmost, st.pos)
-            return State(st2.pos, st.vals + st2.vals) if st2 else None
+            return st2 and State(st2.pos, st.vals + st2.vals)
         elif token in actions:
             f = actions[token]
             return (f(rules, text, utmost, st) if hasattr(f, 'is_peg')
