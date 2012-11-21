@@ -41,5 +41,4 @@ char:    ([^()*+?|])
 #. (('axyz' (<>)*)|'dc')
 #. 
 
-## maybe(regex_parse, '{"hi"]')
-#. ('\'{"hi"]\'',)
+## maybe(regex_parse, '{"hi"](')
