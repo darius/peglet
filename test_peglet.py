@@ -39,8 +39,8 @@ def rule_ref(name):        return '<%s>' % name
 #. ('hello: <bargle>+<>', 'goodbye: <hey>+<there>+<>', 'aloha: <>')
 ## p(metagrammar, ' hello arg = bargle.')
 #. Unparsable('grammar', ' hello ', 'arg = bargle.')
-## p(metagrammar, "'goodbye' world", rule='term')
-#. ('/goodbye/+<world>+<>',)
+##### p(metagrammar, "'goodbye' world", rule='term')
+####. ('/goodbye/+<world>+<>',)
 
 bal = r"""
 allbalanced =  _ bal !.

@@ -1,6 +1,7 @@
 from peglet import Parser, maybe, hug, join, position
+from peglet import parse_grammar, extend, parse
 
-ichbins = Parser(r"""
+ichbins_rules = extend(parse_grammar(r"""
 main     =  _ sexp
 
 sexp     =  \\(.)         _ lit_char
@@ -21,13 +22,13 @@ symchars =  symchar symchars
 symchar  =  ([^\s\\"'()])
 
 _        =  \s*
-""",
+"""),
                  lit_char = ord,
                  join     = join,
                  quote    = lambda x: ('quote', x),
                  hug      = hug)
-
-## ichbins('() (hey)', rule='sexps')
+ichbins = lambda text: parse(ichbins_rules, text)
+## parse(('sexps', ichbins_rules), '() (hey)')
 #. ((), ('hey',))
 
 ## ichbins('hi')
