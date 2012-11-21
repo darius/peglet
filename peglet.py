@@ -41,7 +41,7 @@ def Parser(grammar, **actions):
     Traceback (most recent call last):
     Unparsable: ('one_expr', '(too) ', '(many) (exprs)')
     """
-    parts = re.split(r'\n(\w+):', '\n'+grammar)
+    parts = re.split(r'\n(\w+):', '\n'+grammar) # XXX \w+ differs from [A-Za-z_]\w* below
     if not parts: raise BadGrammar("No grammar")
     if parts[0].strip(): raise BadGrammar("Missing left-hand-side")
     rules = collections.defaultdict(list)
