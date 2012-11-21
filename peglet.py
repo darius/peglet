@@ -12,13 +12,13 @@ def Parser(grammar, **actions):
     a regex, a rule name, or an action name. (Possibly preceded by '!'
     for negation: !foo successfully parses when foo *fails* to parse.)
 
+    A regex token is any non-identifier; an identifier that's not a
+    defined rule name is an error. (So, an incomplete grammar gets you
+    a BadGrammar exception instead of a wrong parse.) To write an
+    identifier like foo as a regex pattern, write /foo.
+
     Results get added by regex captures and transformed by actions.
     (Use keyword arguments to bind the action names to functions.)
-
-    A regex token in the grammar either starts with '/' or is a
-    non-identifier token. An identifier that's not a defined rule name
-    is an error. (So, when you write an incomplete grammar, you get a
-    BadGrammar exception instead of an incorrect parse.)
 
     The parsing function maps a string to a results tuple or raises
     Unparsable. (It can optionally take a rule name to start from, by
