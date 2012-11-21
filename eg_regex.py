@@ -11,41 +11,39 @@ star     = lambda p: '(%s)*' % p
 plus     = lambda p: '(%s)+' % p
 optional = lambda p: '(%s)?' % p
 oneof    = lambda chars: '[%s]' % chars
+someone  = lambda: '.'
 literal  = repr
 
 regex_parse = Parser(r"""
 start:   exp $
 
-exp:     term [|] exp $either
+exp:     term [|] exp    $either
 exp:     term
-exp:                  $empty
+exp:                     $empty
 
-term:    factor term  $chain
+term:    factor term     $chain
 term:    factor
 
-factor:  primary [*]  $star
-factor:  primary [+]  $plus
-factor:  primary [?]  $optional
+factor:  primary [*]     $star
+factor:  primary [+]     $plus
+factor:  primary [?]     $optional
 factor:  primary
 
 primary: \( exp \)
-primary: \[ oneofs \] $join $oneof
-primary: literal      $join $literal
+primary: \[ charset \]   $join $oneof
+primary: [.]             $someone
+primary: \\(.)           $literal
+primary: ([^.()*+?|[\]]) $literal
 
-oneofs:  oneof oneofs
-oneofs:  
-oneof:   \\(.)
-oneof:   ([^\]])
-
-literal: char literal
-literal: char
+charset: char charset
+charset: 
 char:    \\(.)
-char:    ([^()*+?|[\]])
+char:    ([^\]])
 
 """, **globals())
 
-## print regex_parse('a[xy]z()*|dc')[0]
-#. (('a' ([xy] ('z' (<>)*)))|'dc')
+## print regex_parse('a[xy]z()*|dc..hello')[0]
+#. (('a' ([xy] ('z' (<>)*)))|('d' ('c' (. (. ('h' ('e' ('l' ('l' 'o')))))))))
 #. 
 
 ## maybe(regex_parse, '{"hi"](')
