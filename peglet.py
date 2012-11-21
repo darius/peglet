@@ -22,8 +22,6 @@ def Parser(grammar, **actions):
     is an error. (So, when you write an incomplete grammar, you get a
     BadGrammar exception instead of an incorrect parse.)
 
-    Actions named like '::action' get raw access to the parsing state.
-
     The parsing function maps a string a results tuple or raises
     Unparsable. (It can optionally take a rule name to start from, by
     default the first in the grammar.) It doesn't necessarily match
@@ -82,10 +80,10 @@ def _parse(rules, actions, rule, text):
         return st
 
     def parse_token(token, utmost, st):
-        if token.startswith('::'):
-            return actions[token[2:]](rules, text, utmost, st)
-        elif re.match(r'[:]\w+$', token):
-            return State(st.pos, (actions[token[1:]](*st.vals),))
+        if re.match(r'[:]\w+$', token):
+            f = actions[token[1:]]
+            return (f(rules, text, utmost, st) if hasattr(f, 'is_peg')
+                    else State(st.pos, (f(*st.vals),)))
         elif token.startswith('!'):
             return None if parse_token(token[1:], [0], st) else st
         elif token in rules:
@@ -116,6 +114,6 @@ def maybe(parse, *args, **kwargs): # XXX rename to 'attempt'?
 def hug(*xs): return xs
 def join(*strs): return ''.join(strs)
 
-# A raw-access action:
 def position(rules, text, utmost, st):
     return State(st.pos, st.vals + (st.pos,))
+position.is_peg = True
