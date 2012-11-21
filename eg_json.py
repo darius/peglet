@@ -40,7 +40,7 @@ string:   " chars " _            $join
 chars:    char chars
 chars:
 
-char:     ([^\x00-0x1f"\\])
+char:     ([^\x00-\x1f"\\])
 char:     \\(["/\\])
 char:     \\([bfnrt])            $escape
 char:     \\u xd xd xd xd  $join $u_escape
@@ -82,3 +82,14 @@ _:        \s*
 #. (({'hey': True}, (-12.34,)),)
 
 ## maybe(json_parse, '{"hi"]')
+
+# Udacity CS212 problem 3.1:
+
+## json_parse('["testing", 1, 2, 3]')
+#. (('testing', 1.0, 2.0, 3.0),)
+    
+## json_parse('-123.456e+789')
+#. (-inf,)
+    
+## json_parse('{"age": 21, "state":"CO","occupation":"rides the rodeo"}')
+#. ({'age': 21.0, 'state': 'CO', 'occupation': 'rides the rodeo'},)
