@@ -47,9 +47,8 @@ def Parser(grammar, **actions):
     if parts[0].strip(): raise BadGrammar("Missing left hand side", parts[0])
     if len(set(parts[1::2])) != len(parts[1::2]):
         raise BadGrammar("Multiply-defined rule(s)", grammar)
-    rules = dict((parts[i], [rhs.split()
-                             for rhs in re.split(r'\s[|](?:\s|$)', parts[i+1])])
-                 for i in range(1, len(parts), 2))
+    rules = dict((lhs, [alt.split() for alt in re.split(r'\s[|](?:\s|$)', rhs)])
+                 for lhs, rhs in zip(parts[1::2], parts[2::2]))
     return lambda text, rule=parts[1]: _parse(rules, actions, rule, text)
 
 _identifier = r'[A-Za-z_]\w*'
