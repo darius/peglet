@@ -8,12 +8,13 @@ import collections, re
 def Parser(grammar):
     # Map the name of each grammar rule to a list of its alternatives.
 
-    parts = re.split(r'\n(\w+):', '\n'+grammar)
+    parts = re.split(r'\s('+_identifier+')\s+=\s', ' '+grammar)
     if not parts: raise BadGrammar("No grammar")
-    if parts[0].strip(): raise BadGrammar("Missing left-hand-side")
-    rules = collections.defaultdict(list)
-    for i in range(1, len(parts), 2):
-        rules[parts[i]].append(parts[i+1].split())
+    if parts[0].strip(): raise BadGrammar("Missing left hand side", parts[0])
+    if len(set(parts[1::2])) != len(parts[1::2]):
+        raise BadGrammar("Multiply-defined rule(s)", grammar)
+    rules = dict((lhs, [alt.split() for alt in re.split(r'\s[|](?:\s|$)', rhs)])
+                 for lhs, rhs in zip(parts[1::2], parts[2::2]))
 
     def comp():
         yield 'import re'
@@ -64,6 +65,8 @@ def Parser(grammar):
             yield 'vals += m.groups()'
 
     return '\n'.join(comp())
+
+_identifier = r'[A-Za-z_]\w*'
 
 ## exec(nums_grammar)
 ## rule_num('42,123 hag', [0], 0)
@@ -131,11 +134,11 @@ def Parser(grammar):
 #. 
 
 nums_grammar = Parser(r"""
-allnums:   nums !.
+allnums =  nums !.
 
-nums:   num , nums
-nums:   num
-nums:   
+nums =  num , nums
+     |  num
+     |  
 
-num:    ([0-9]+) $int
+num =   ([0-9]+) $int
 """)
