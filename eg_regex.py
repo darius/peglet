@@ -17,23 +17,23 @@ literal  = repr
 regex_parse = Parser(r"""
 start   = exp $
 
-exp     = term [|] exp    :either
+exp     = term [|] exp    either
         | term
-        |                 :empty
+        |                 empty
 
-term    = factor term     :chain
+term    = factor term     chain
         | factor
 
-factor  = primary [*]     :star
-        | primary [+]     :plus
-        | primary [?]     :optional
+factor  = primary [*]     star
+        | primary [+]     plus
+        | primary [?]     optional
         | primary
 
 primary = \( exp \)
-        | \[ charset \]   :join :oneof
-        | [.]             :someone
-        | \\(.)           :literal
-        | ([^.()*+?|[\]]) :literal
+        | \[ charset \]   join oneof
+        | [.]             someone
+        | \\(.)           literal
+        | ([^.()*+?|[\]]) literal
 
 charset = char charset
         | 

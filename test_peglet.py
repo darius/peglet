@@ -14,15 +14,15 @@ metagrammar = r"""
 grammar       =  _ rules
 rules         =  rule rules               
               |  rule
-rule          =  name [=] _ expr \. _       :make_rule
-expr          =  term \| _ expr             :alt
+rule          =  name [=] _ expr \. _       make_rule
+expr          =  term \| _ expr             alt
               |  term
-term          =  factors : _ name           :reduce_
+term          =  factors : _ name           reduce_
               |  factors
-factors       =  factor factors             :seq
-              |                             :empty
-factor        =  '((?:\\.|[^'])*)' _        :literal
-              |  name                       :rule_ref
+factors       =  factor factors             seq
+              |                             empty
+factor        =  '((?:\\.|[^'])*)' _        literal
+              |  name                       rule_ref
 name          =  (\w+) _
 _             =  \s*
 """
@@ -45,7 +45,7 @@ def rule_ref(name):        return '<%s>' % name
 bal = r"""
 allbalanced =  _ bal !.
 _           =  \s*
-bal         =  \( _ bal \) _ :hug bal
+bal         =  \( _ bal \) _ hug bal
             |  (\w+) _
             |
 """
@@ -57,7 +57,7 @@ bal         =  \( _ bal \) _ :hug bal
 curl = r"""
 one_expr =  _ expr $
 _        =  \s*
-expr     =  { _ exprs } _ :hug
+expr     =  { _ exprs } _ hug
          |  ([^{}\s]+) _
 exprs    =  expr exprs
          |

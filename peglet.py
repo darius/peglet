@@ -30,7 +30,7 @@ def Parser(grammar, **actions):
     >>> parse_s_expression = Parser(r'''
     ... one_expr = _ expr !.
     ... _        = \s*
-    ... expr     = \( _ exprs \) _ :hug
+    ... expr     = \( _ exprs \) _  hug
     ...          | ([^()\s]+) _
     ... exprs    = expr exprs
     ...          | ''',             hug = lambda *vals: vals)
@@ -80,15 +80,15 @@ def _parse(rules, actions, rule, text):
         return st
 
     def parse_token(token, utmost, st):
-        if re.match(r'[:]\w+$', token):
-            f = actions[token[1:]]
-            return (f(rules, text, utmost, st) if hasattr(f, 'is_peg')
-                    else State(st.pos, (f(*st.vals),)))
-        elif token.startswith('!'):
+        if token.startswith('!'):
             return None if parse_token(token[1:], [0], st) else st
         elif token in rules:
             st2 = parse_rule(token, utmost, st.pos)
             return State(st2.pos, st.vals + st2.vals) if st2 else None
+        elif token in actions:
+            f = actions[token]
+            return (f(rules, text, utmost, st) if hasattr(f, 'is_peg')
+                    else State(st.pos, (f(*st.vals),)))
         else:
             if re.match(_identifier+'$', token):
                 raise BadGrammar("Missing rule: %s" % token)

@@ -3,11 +3,11 @@ from peglet import Parser, maybe, hug, join, position
 ichbins = Parser(r"""
 main     =  _ sexp
 
-sexp     =  \\(.)         _ :lit_char
-         |  " qchars "    _ :join
-         |  symchars      _ :join
-         |  ' _ sexp        :quote
-         |  \( _ sexps \) _ :hug
+sexp     =  \\(.)         _ lit_char
+         |  " qchars "    _ join
+         |  symchars      _ join
+         |  ' _ sexp        quote
+         |  \( _ sexps \) _ hug
 
 sexps    =  sexp sexps
          |
@@ -65,7 +65,7 @@ nums    = num , nums
         | num
         | 
 
-num     = ([0-9]+) :int
+num     = ([0-9]+) int
 """,
               int=int)
 sum_nums = lambda s: sum(nums(s))
@@ -73,7 +73,7 @@ sum_nums = lambda s: sum(nums(s))
 ## sum_nums('10,30,43')
 #. 83
 
-one_word = Parser("word = \w+ :position", position=position)
+one_word = Parser("word = \w+ position", position=position)
 
 ## one_word('hello')
 #. (5,)
@@ -85,7 +85,7 @@ namevalues = Parser(r"""
 list   =  _ pairs $
 pairs  =  pair pairs
        |
-pair   =  name [=] _ name [,;]? _   :hug
+pair   =  name [=] _ name [,;]? _   hug
 name   =  (\w+) _
 _      =  \s*
 """, **globals())
@@ -98,7 +98,7 @@ namevalues_dict = lambda s: dict(namevalues(s))
 
 splitting = Parser(r"""
 split  =  p split
-       |  chunk :join split
+       |  chunk join split
        |  
 chunk  =  p
        |  (.) chunk
@@ -128,7 +128,7 @@ gsub = lambda text, replacement: ''.join(Parser(r"""
 gsub =  p gsub
      |  (.) gsub
      |    
-p    =  /WHEE :replace
+p    =  /WHEE replace
 """, replace=lambda: replacement)(text))
 
 ## gsub('hi there WHEEWHEE to you WHEEEE', 'GLARG')
@@ -139,13 +139,13 @@ record =   field fields $
 fields =   , field fields
        |   
 
-field  =   " qchars "\s* :join
+field  =   " qchars "\s* join
        |   ([^,"\n]*)
 
 qchars =   qchar qchars
        |               
 qchar  =   ([^"])
-       |   "" :dquote
+       |   "" dquote
 """, 
              join = join,
              dquote = lambda: '"')

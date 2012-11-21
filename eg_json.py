@@ -19,34 +19,34 @@ mk_number = float
 json_parse = Parser(r"""
 start    = _ value
 
-object   = { _ members } _        :mk_object
-         | { _ } _                :mk_object
+object   = { _ members } _        mk_object
+         | { _ } _                mk_object
 members  = pair , _ members
          | pair
-pair     = string : _ value       :hug
+pair     = string : _ value       hug
 
-array    = \[ _ elements \] _     :hug
-         | \[ _ \] _              :hug
+array    = \[ _ elements \] _     hug
+         | \[ _ \] _              hug
 elements = value , _ elements
          | value
 
 value    = string | number
          | object | array
-         | (true|false|null)\b _  :mk_literal
+         | (true|false|null)\b _  mk_literal
 
-string   = " chars " _            :join
+string   = " chars " _            join
 chars    = char chars
          |
 char     = ([^\x00-\x1f"\\])
          | \\(["/\\])
-         | \\([bfnrt])            :escape
-         | \\u xd xd xd xd  :join :u_escape
+         | \\([bfnrt])            escape
+         | \\u xd xd xd xd   join u_escape
 xd       = ([0-9a-fA-F])
 
-number   = int frac exp _   :join :mk_number
-         | int frac _       :join :mk_number
-         | int exp _        :join :mk_number
-         | int _            :join :mk_number
+number   = int frac exp _    join mk_number
+         | int frac _        join mk_number
+         | int exp _         join mk_number
+         | int _             join mk_number
 int      = (-[1-9]) digits
          | (-) digit
          | ([1-9]) digits

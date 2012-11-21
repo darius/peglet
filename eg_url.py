@@ -50,20 +50,20 @@ formcode      = [NTC]
 mailtoaddress = mailto: xalphas @ hostname
 
 httpaddress   = http:// hostport opt_path opt_search opt_fragment
-opt_path      = [/] path     :join :mk_path | 
-opt_search    = [?] search   :join :mk_search | 
-opt_fragment  = # fragmentid :join :mk_fragment | 
+opt_path      = [/] path     join mk_path | 
+opt_search    = [?] search   join mk_search | 
+opt_fragment  = # fragmentid join mk_fragment | 
 
 hostport      = host : port
               | host
 
-host          = host_syntax :join :mk_host
+host          = host_syntax   join mk_host
 host_syntax   = hostname | hostnumber
 hostname      = ialpha ([.]) hostname
               | ialpha
 hostnumber    = digits ([.]) digits ([.]) digits ([.]) digits
 
-port          = digits :join :mk_port
+port          = digits   join mk_port
 
 path          = segment ([/]) path
               | segment
