@@ -24,9 +24,9 @@ def Parser(grammar, **actions):
     parses when foo *fails* to parse.)
 
     A regex token is either /<chars>/ or any non-identifier; an
-    identifier that's not a defined rule name is an error. (So, an
-    incomplete grammar gets you a BadGrammar exception instead of a
-    wrong parse.)
+    identifier that's not a defined rule or action name is an
+    error. (So, an incomplete grammar gets you a BadGrammar exception
+    instead of a wrong parse.)
 
     Results get added by regex captures and transformed by actions.
     (Use keyword arguments to bind the action names to functions.)
