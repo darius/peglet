@@ -4,6 +4,15 @@ Parsing with PEGs, or a minimal usable subset thereof.
 
 import collections, re
 
+def _memo(f):
+    memos = {}
+    def memoized(*args):
+        try: return memos[args]
+        except KeyError:
+            result = memos[args] = f(*args)
+            return result
+    return memoized
+
 def Parser(grammar, **actions):
     r"""Make a parsing function from a PEG grammar. You supply the
     grammar as a string of productions like "a = b c | d", like the
@@ -49,57 +58,50 @@ def Parser(grammar, **actions):
 
 _identifier = r'[A-Za-z_]\w*'
 
-# A parsing state: a position in the input text and a values tuple.
-State = collections.namedtuple('State', 'pos vals'.split())
-
 def _parse(rules, actions, rule, text):
-    # Each parsing function starts from a pos in text and returns
-    # either None (failure) or an updated state. We also track utmost:
-    # a mutable box holding the rightmost position positively reached.
+    # Each function takes a position pos (and maybe a values tuple
+    # vals) and returns either (True, pos1, vals1) on success or
+    # (False, farthest, ignore) on failure (where farthest is the
+    # rightmost position reached in the attempt).
 
-    memos = {}
-    def parse_rule(name, utmost, pos):
-        try: return memos[name, pos]
-        except KeyError:
-            result = memos[name, pos] = really_parse_rule(name, utmost, pos)
-            return result
-
-    def really_parse_rule(name, utmost, pos):
+    @_memo
+    def parse_rule(name, pos):
+        farthest = pos
         for alternative in rules[name]:
-            st = parse_sequence(alternative, utmost, pos)
-            if st: return st
-        return None
+            ok, pos1, vals1 = parse_sequence(alternative, pos)
+            if ok: return True, pos1, vals1
+            farthest = max(farthest, pos1)
+        return False, farthest, None
 
-    def parse_sequence(tokens, utmost, pos):
-        st = State(pos, ())
+    def parse_sequence(tokens, pos):
+        vals = ()
         for token in tokens:
-            st = parse_token(token, utmost, st)
-            if not st: break
-        return st
+            ok, pos, vals = parse_token(token, pos, vals)
+            if not ok: return False, pos, None
+        return True, pos, vals
 
-    def parse_token(token, utmost, st):
+    def parse_token(token, pos, vals):
         if token.startswith('!'):
-            return None if parse_token(token[1:], [0], st) else st
+            ok, _, _ = parse_token(token[1:], pos, vals)
+            return not ok, pos, vals
         elif token in rules:
-            st2 = parse_rule(token, utmost, st.pos)
-            return st2 and State(st2.pos, st.vals + st2.vals)
+            ok, pos1, vals1 = parse_rule(token, pos)
+            return ok, pos1, ok and vals + vals1
         elif token in actions:
             f = actions[token]
-            return (f(rules, text, utmost, st) if hasattr(f, 'is_peg')
-                    else State(st.pos, (f(*st.vals),)))
+            if hasattr(f, 'is_peg'): return f(text, pos, vals) 
+            else: return True, pos, (f(*vals),)
         else:
             if re.match(_identifier+'$', token):
                 raise BadGrammar("Missing rule: %s" % token)
             if re.match(r'/.', token): token = token[1:]
-            m = re.match(token, text[st.pos:])
-            if not m: return None
-            utmost[0] = max(utmost[0], st.pos + m.end())
-            return State(st.pos + m.end(), st.vals + m.groups())
+            m = re.match(token, text[pos:])
+            if m: return True, pos + m.end(), vals + m.groups()
+            else: return False, pos, None
 
-    utmost = [0]
-    st = parse_rule(rule, utmost, 0)
-    if st: return st.vals
-    else: raise Unparsable(rule, text[:utmost[0]], text[utmost[0]:])
+    ok, pos, vals = parse_rule(rule, 0)
+    if ok: return vals
+    else: raise Unparsable(rule, text[:pos], text[pos:])
 
 class Unparsable(Exception): pass
 class BadGrammar(Exception): pass
@@ -112,6 +114,5 @@ def maybe(parse, *args, **kwargs): # XXX rename to 'attempt'?
 def hug(*xs): return xs
 def join(*strs): return ''.join(strs)
 
-def position(rules, text, utmost, st):
-    return State(st.pos, st.vals + (st.pos,))
+def position(text, pos, vals): return True, pos, vals + (pos,)
 position.is_peg = True
