@@ -5,6 +5,7 @@ from peglet import Parser
 # XXX this line is reflected from (I think) the original:
 #           ShiftExpression RelationalOperator RelationalExpression
 # XXX what about &=, etc?
+# XXX jsonPair: what level of Expression to use?
 
 grammar = r"""
 Program = _ Elements $
@@ -167,7 +168,7 @@ PrimaryExpression =
         | this\b _
 
 JsonPairs = JsonPair , _ JsonPairs | JsonPair
-JsonPair = JsonProperty : _ Expression
+JsonPair = JsonProperty : _ AssignmentExpression
 JsonProperty = Identifier | StringLiteral
 
 AssignmentOperator     = [-+*/%]?= _ | &&= _ | ||= _
@@ -201,9 +202,10 @@ function advance(maxP, p, value) {
 """
 
 ## p(eg)
-#. Traceback (most recent call last):
-#.   File "/home/darius/git/peglet/peglet.py", line 48, in <lambda>
-#.     return lambda text, rule=parts[1]: _parse(rules, actions, rule, text)
-#.   File "/home/darius/git/peglet/peglet.py", line 102, in _parse
-#.     else: raise Unparsable(rule, text[:utmost[0]], text[utmost[0]:])
-#. Unparsable: ('Program', "\n// Successfully advance a peg's parse rightwards.\nfunction advance(maxP, p, value) {\n    maxP.p = Math.max(maxP.p, p);\n    return {p: p, value", ': value};\n}\n')
+#. ('advance', 'maxP', 'p', 'value', 'maxP', 'p', 'Math', 'max', 'maxP', 'p', 'p', 'p', 'p', 'value', 'value')
+
+hm = r"""
+{p: p };
+"""
+## p(hm)
+#. ('p', 'p')
