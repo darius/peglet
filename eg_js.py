@@ -177,7 +177,7 @@ array    = \[ _ elements \] _     mk_array
 elements = AssignmentExpression , _ elements
          | AssignmentExpression
 
-AssignmentOperator     = [-+*/%]?= _ | &&= _ | ||= _
+AssignmentOperator     = [-+*/%&^|]?= _ | <<= | >>>?= | &&= _ | ||= _
 EqualityOperator       = [!=]==? _
 RelationalOperator     = [<>]=? _
 ShiftOperator          = << | >>>?
