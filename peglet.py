@@ -17,11 +17,11 @@ _identifier = r'[A-Za-z_]\w*'
 
 def Parser(grammar, **actions):
     r"""Make a parsing function from a PEG grammar. You supply the
-    grammar as a string of productions like "a = b c | d", like the
-    example grammar below. All the tokens making up the productions
-    must be whitespace-separated. Each token (besides '=' and '|') is
-    a regex, a rule name, or an action name. (Possibly preceded by '!'
-    for negation: !foo successfully parses when foo *fails* to parse.)
+    grammar as a string of rules like "a = b c | d". All the tokens
+    making up the rules must be whitespace-separated. Each token
+    (besides '=' and '|') is a regex, a rule name, or an action
+    name. (Possibly preceded by '!'  for negation: !foo successfully
+    parses when foo *fails* to parse.)
 
     A regex token is either /<chars>/ or any non-identifier; an
     identifier that's not a defined rule name is an error. (So, an
