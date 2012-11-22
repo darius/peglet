@@ -85,7 +85,7 @@ def _parse(rules, actions, rule, text):
         vals = ()
         for token in tokens:
             ok, pos, vals = parse_token(token, pos, vals)
-            if not ok: return False, pos, None
+            if not ok: return False, pos, vals
         return True, pos, vals
 
     def parse_token(token, pos, vals):
