@@ -180,7 +180,7 @@ elements = AssignmentExpression , _ elements
 AssignmentOperator     = [-+*/%]?= _ | &&= _ | ||= _
 EqualityOperator       = [!=]==? _
 RelationalOperator     = [<>]=? _
-ShiftOperator          = /XXX
+ShiftOperator          = << | >>>?
 MultiplicativeOperator = [*/%] _
 UnaryOperator          = [+~!] _
 IncrementOperator      = [+][+] _ | -- _
