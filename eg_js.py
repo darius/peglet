@@ -158,9 +158,10 @@ PrimaryExpression =
           \( _ Expression \) _
         | { _ JsonPairs } _
         | { _ } _
+        | array
         | Identifier
-        | IntegerLiteral
         | FloatingPointLiteral
+        | IntegerLiteral
         | StringLiteral
         | false\b _
         | true\b _
@@ -170,6 +171,11 @@ PrimaryExpression =
 JsonPairs = JsonPair , _ JsonPairs | JsonPair
 JsonPair = JsonProperty : _ AssignmentExpression
 JsonProperty = Identifier | StringLiteral
+
+array    = \[ _ elements \] _     mk_array
+         | \[ _ \] _              mk_array
+elements = AssignmentExpression , _ elements
+         | AssignmentExpression
 
 AssignmentOperator     = [-+*/%]?= _ | &&= _ | ||= _
 EqualityOperator       = [!=]==? _
@@ -182,11 +188,32 @@ IncrementOperator      = [+][+] _ | -- _
 Identifier = !Keyword ([A-Za-z_]\w*\b) _
 Keyword    = (?:break|continue|delete|else|false|for|function|if|in|new|null|return|this|true|var|with|while)\b
 
-IntegerLiteral = /XXX
+IntegerLiteral = int            join mk_number
+FloatingPointLiteral = number   join mk_number
 
-FloatingPointLiteral = /XXX
+number   = int frac exp _
+         | int frac _
+         | int exp _
+         | int _
 
-StringLiteral = /XXX
+int      = (-[1-9]) digits
+         | (-) digit
+         | ([1-9]) digits
+         | digit
+frac     = ([.]) digits
+exp      = ([eE][+-]?) digits
+digits   = (\d+)
+digit    = (\d)
+
+StringLiteral = string
+string   = " chars " _            join
+chars    = char chars
+         |
+char     = ([^\x00-\x1f"\\])
+         | \\(["/\\])
+         | \\([bfnrt])            escape
+         | \\u xd xd xd xd   join u_escape
+xd       = ([0-9a-fA-F])
 
 _          = (?:\s|//[^\n]*\n?)*
 """
