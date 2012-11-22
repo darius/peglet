@@ -76,7 +76,7 @@ _        = \s*
 ## json_parse('[{"hey": true}, [-12.34]]')
 #. (({'hey': True}, (-12.34,)),)
 
-## maybe(json_parse, '{"hi"]')
+## attempt(json_parse, '{"hi"]')
 
 # Udacity CS212 problem 3.1:
 

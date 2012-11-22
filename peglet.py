@@ -106,7 +106,8 @@ def _parse(rules, actions, rule, text):
 class Unparsable(Exception): pass
 class BadGrammar(Exception): pass
 
-def maybe(parse, *args, **kwargs): # XXX rename to 'attempt'?
+def attempt(parse, *args, **kwargs):
+    "Call a parser, but return None on failure instead of raising Unparsable."
     try: return parse(*args, **kwargs)
     except Unparsable: return None
 

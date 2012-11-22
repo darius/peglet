@@ -102,11 +102,11 @@ national      = [{}|\[\]\\^~]
 punctuation   = [<>]
 """, **globals())
 
-## maybe(url_parse, 'true')
-## maybe(url_parse, 'http://google.com')
+## attempt(url_parse, 'true')
+## attempt(url_parse, 'http://google.com')
 #. (('host', 'google.com'),)
 ## url_parse('http://en.wikipedia.org/wiki/Uniform_resource_locator')
 #. (('host', 'en.wikipedia.org'), ('path', 'wiki/Uniform_resource_locator'))
-## maybe(url_parse, 'http://wry.me/fun/toys/yes.html?right=wrong#fraggle')
+## attempt(url_parse, 'http://wry.me/fun/toys/yes.html?right=wrong#fraggle')
 ## url_parse('http://wry.me/fun/toys/yes.html?rightwrong#fraggle')
 #. (('host', 'wry.me'), ('path', 'fun/toys/yes.html'), ('search', 'rightwrong'), ('fragment', 'fraggle'))

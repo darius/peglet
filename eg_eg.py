@@ -1,4 +1,4 @@
-from peglet import Parser, maybe, hug, join, position
+from peglet import Parser, attempt, hug, join, position
 
 ichbins = Parser(r"""
 main     =  _ sexp
@@ -79,7 +79,7 @@ one_word = Parser("word = \w+ position", position=position)
 #. (5,)
 ## one_word('hello there')
 #. (5,)
-## maybe(one_word, ' ')
+## attempt(one_word, ' ')
 
 namevalues = Parser(r"""
 list   =  _ pairs $
@@ -118,9 +118,9 @@ c    =  [^()]
      |  bal
 """)
 
-## maybe(balanced_parens, '()')
+## attempt(balanced_parens, '()')
 #. ()
-## maybe(balanced_parens, '(()')
+## attempt(balanced_parens, '(()')
 
 # gsub: another parameterized one
 

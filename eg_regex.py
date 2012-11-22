@@ -46,4 +46,4 @@ char    = \\(.)
 #. (('a' ([xy] ('z' ("")*)))|('d' ('c' (. (. ('h' ('e' ('l' ('l' 'o')))))))))
 #. 
 
-## maybe(regex_parse, '{"hi"](')
+## attempt(regex_parse, '{"hi"](')
