@@ -185,7 +185,7 @@ MultiplicativeOperator = [*/%] _
 UnaryOperator          = [+~!] _
 IncrementOperator      = [+][+] _ | -- _
 
-Identifier = !Keyword ([A-Za-z_]\w*\b) _
+Identifier = !Keyword ([A-Za-z_]\w*) _
 Keyword    = (?:break|continue|delete|else|false|for|function|if|in|new|null|return|this|true|var|with|while)\b
 
 IntegerLiteral = int            join mk_number
