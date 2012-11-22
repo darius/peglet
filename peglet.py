@@ -13,6 +13,8 @@ def _memo(f):
             return result
     return memoized
 
+_identifier = r'[A-Za-z_]\w*'
+
 def Parser(grammar, **actions):
     r"""Make a parsing function from a PEG grammar. You supply the
     grammar as a string of productions like "a = b c | d", like the
@@ -56,7 +58,13 @@ def Parser(grammar, **actions):
                  for lhs, rhs in zip(parts[1::2], parts[2::2]))
     return lambda text, rule=parts[1]: _parse(rules, actions, rule, text)
 
-_identifier = r'[A-Za-z_]\w*'
+class Unparsable(Exception): pass
+class BadGrammar(Exception): pass
+
+def attempt(parse, *args, **kwargs):
+    "Call a parser, but return None on failure instead of raising Unparsable."
+    try: return parse(*args, **kwargs)
+    except Unparsable: return None
 
 def _parse(rules, actions, rule, text):
     # Each function takes a position pos (and maybe a values tuple
@@ -102,14 +110,6 @@ def _parse(rules, actions, rule, text):
     ok, pos, vals = parse_rule(rule, 0)
     if ok: return vals
     else: raise Unparsable(rule, text[:pos], text[pos:])
-
-class Unparsable(Exception): pass
-class BadGrammar(Exception): pass
-
-def attempt(parse, *args, **kwargs):
-    "Call a parser, but return None on failure instead of raising Unparsable."
-    try: return parse(*args, **kwargs)
-    except Unparsable: return None
 
 # Some often-used actions:
 def hug(*xs): return xs
