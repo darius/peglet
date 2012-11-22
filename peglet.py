@@ -20,7 +20,7 @@ def Parser(grammar, **actions):
     grammar as a string of rules like "a = b c | d". All the tokens
     making up the rules must be whitespace-separated. Each token
     (besides '=' and '|') is a regex, a rule name, or an action
-    name. (Possibly preceded by '!'  for negation: !foo successfully
+    name. (Possibly preceded by '!' for negation: !foo successfully
     parses when foo *fails* to parse.)
 
     A regex token is either /<chars>/ or any non-identifier; an
