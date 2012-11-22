@@ -50,7 +50,7 @@ formcode      = [NTC]
 mailtoaddress = mailto: xalphas @ hostname
 
 httpaddress   = http:// hostport opt_path opt_search opt_fragment
-opt_path      = [/] path     join mk_path | 
+opt_path      = / path       join mk_path | 
 opt_search    = [?] search   join mk_search | 
 opt_fragment  = # fragmentid join mk_fragment | 
 
@@ -65,7 +65,7 @@ hostnumber    = digits ([.]) digits ([.]) digits ([.]) digits
 
 port          = digits   join mk_port
 
-path          = segment ([/]) path
+path          = segment (/) path
               | segment
               | 
 segment       = xpalphas

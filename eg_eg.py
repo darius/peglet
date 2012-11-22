@@ -44,15 +44,15 @@ _        =  \s*
 as_and_bs = Parser(r"""
 allS = S $
 
-S    = /a B
-     | /b A
+S    = /a/ B
+     | /b/ A
      |
 
-A    = /a S
-     | /b A A
+A    = /a/ S
+     | /b/ A A
 
-B    = /b S
-     | /a B B
+B    = /b/ S
+     | /a/ B B
 """)
 
 ## as_and_bs("abaabbbbaa")
@@ -128,7 +128,7 @@ gsub = lambda text, replacement: ''.join(Parser(r"""
 gsub =  p gsub
      |  (.) gsub
      |    
-p    =  /WHEE replace
+p    =  /WHEE/ replace
 """, replace=lambda: replacement)(text))
 
 ## gsub('hi there WHEEWHEE to you WHEEEE', 'GLARG')

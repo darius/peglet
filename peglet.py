@@ -23,10 +23,10 @@ def Parser(grammar, **actions):
     a regex, a rule name, or an action name. (Possibly preceded by '!'
     for negation: !foo successfully parses when foo *fails* to parse.)
 
-    A regex token is any non-identifier; an identifier that's not a
-    defined rule name is an error. (So, an incomplete grammar gets you
-    a BadGrammar exception instead of a wrong parse.) To write an
-    identifier like foo as a regex pattern, write /foo.
+    A regex token is either /<chars>/ or any non-identifier; an
+    identifier that's not a defined rule name is an error. (So, an
+    incomplete grammar gets you a BadGrammar exception instead of a
+    wrong parse.)
 
     Results get added by regex captures and transformed by actions.
     (Use keyword arguments to bind the action names to functions.)
@@ -102,7 +102,7 @@ def _parse(rules, actions, rule, text):
         else:
             if re.match(_identifier+'$', token):
                 raise BadGrammar("Missing rule: %s" % token)
-            if re.match(r'/.', token): token = token[1:]
+            if re.match(r'/.+/$', token): token = token[1:-1]
             m = re.match(token, text[pos:])
             if m: return True, pos + m.end(), vals + m.groups()
             else: return False, pos, None

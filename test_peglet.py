@@ -72,9 +72,9 @@ exprs    =  expr exprs
 #. (('hi', ('there',), ((),)),)
 
 multiline_rules = r"""
-hi =  /this /is
-      /a /rule
-   |  /or /this
+hi =  /this/ /is/
+      /a/ /rule/
+   |  /or/ /this/
 """
 
 ## p(multiline_rules, "thisisarule")
