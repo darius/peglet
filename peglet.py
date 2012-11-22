@@ -89,7 +89,7 @@ def _parse(rules, actions, rule, text):
         return True, pos, vals
 
     def parse_token(token, pos, vals):
-        if token.startswith('!'):
+        if re.match(r'!.', token):
             ok, _, _ = parse_token(token[1:], pos, vals)
             return not ok, pos, vals
         elif token in rules:
