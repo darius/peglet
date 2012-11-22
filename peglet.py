@@ -115,5 +115,6 @@ def _parse(rules, actions, rule, text):
 def hug(*xs): return xs
 def join(*strs): return ''.join(strs)
 
-def position(text, pos, vals): return True, pos, vals + (pos,)
+def position(text, pos, vals):
+    return True, pos, vals + (pos,)
 position.is_peg = True
