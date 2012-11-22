@@ -79,7 +79,7 @@ def _parse(rules, actions, rule, text):
             ok, pos1, vals1 = parse_sequence(alternative, pos)
             if ok: return True, pos1, vals1
             farthest = max(farthest, pos1)
-        return False, farthest, None
+        return False, farthest, ()
 
     def parse_sequence(tokens, pos):
         vals = ()
@@ -105,7 +105,7 @@ def _parse(rules, actions, rule, text):
             if re.match(r'/.+/$', token): token = token[1:-1]
             m = re.match(token, text[pos:])
             if m: return True, pos + m.end(), vals + m.groups()
-            else: return False, pos, None
+            else: return False, pos, ()
 
     ok, pos, vals = parse_rule(rule, 0)
     if ok: return vals
