@@ -172,11 +172,11 @@ JsonPair = JsonProperty : _ AssignmentExpression
 JsonProperty = Identifier | StringLiteral
 
 AssignmentOperator     = [-+*/%]?= _ | &&= _ | ||= _
-EqualityOperator       = [!=]=
-RelationalOperator     = [<>]=?
+EqualityOperator       = [!=]==? _
+RelationalOperator     = [<>]=? _
 ShiftOperator          = /XXX
-MultiplicativeOperator = [*/%]
-UnaryOperator          = /XXX
+MultiplicativeOperator = [*/%] _
+UnaryOperator          = [+~!] _
 IncrementOperator      = [+][+] _ | -- _
 
 Identifier = !Keyword ([A-Za-z_]\w*\b) _
