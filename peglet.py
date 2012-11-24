@@ -2,7 +2,7 @@
 Parsing with PEGs, or a minimal usable subset thereof.
 """
 
-import collections, re
+import re
 
 def _memo(f):
     memos = {}
