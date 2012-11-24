@@ -68,53 +68,54 @@ def attempt(parse, *args, **kwargs):
 
 def _parse(rules, actions, rule, text):
     # Each function takes a position pos (and maybe a values tuple
-    # vals) and returns either (True, pos1, vals1) on success or
-    # (False, farthest, ignore) on failure (where farthest is the
+    # vals) and returns either (True, far, pos1, vals1) on success or
+    # (False, far, ignore, ignore) on failure (where far is the
     # rightmost position reached in the attempt).
 
     @_memo
     def parse_rule(name, pos):
         farthest = pos
         for alternative in rules[name]:
-            ok, pos1, vals1 = parse_sequence(alternative, pos)
-            if ok: return True, pos1, vals1
-            farthest = max(farthest, pos1)
-        return False, farthest, ()
+            ok, far, pos1, vals1 = parse_sequence(alternative, pos)
+            farthest = max(farthest, far)
+            if ok: return True, farthest, pos1, vals1
+        return False, farthest, 0, ()
 
     def parse_sequence(tokens, pos):
-        vals = ()
+        farthest, vals = pos, ()
         for token in tokens:
-            ok, pos, vals = parse_token(token, pos, vals)
-            if not ok: return False, pos, vals
-        return True, pos, vals
+            ok, far, pos, vals = parse_token(token, pos, vals)
+            farthest = max(farthest, far)
+            if not ok: return False, farthest, 0, ()
+        return True, farthest, pos, vals
 
     def parse_token(token, pos, vals):
         if re.match(r'!.', token):
-            ok, _, _ = parse_token(token[1:], pos, vals)
-            return not ok, pos, vals
+            ok, _, _, _ = parse_token(token[1:], pos, vals)
+            return not ok, pos, pos, vals
         elif token in rules:
-            ok, pos1, vals1 = parse_rule(token, pos)
-            return ok, pos1, ok and vals + vals1
+            ok, far, pos1, vals1 = parse_rule(token, pos)
+            return ok, far, pos1, ok and vals + vals1
         elif token in actions:
             f = actions[token]
             if hasattr(f, 'is_peg'): return f(text, pos, vals) 
-            else: return True, pos, (f(*vals),)
+            else: return True, pos, pos, (f(*vals),)
         else:
             if re.match(_identifier+'$', token):
                 raise BadGrammar("Missing rule: %s" % token)
             if re.match(r'/.+/$', token): token = token[1:-1]
             m = re.match(token, text[pos:])
-            if m: return True, pos + m.end(), vals + m.groups()
-            else: return False, pos, ()
+            if m: return True, pos + m.end(), pos + m.end(), vals + m.groups()
+            else: return False, pos, 0, ()
 
-    ok, pos, vals = parse_rule(rule, 0)
+    ok, far, pos, vals = parse_rule(rule, 0)
     if ok: return vals
-    else: raise Unparsable(rule, text[:pos], text[pos:])
+    else: raise Unparsable(rule, text[:far], text[far:])
 
 # Some often-used actions:
 def hug(*xs): return xs
 def join(*strs): return ''.join(strs)
 
 def position(text, pos, vals):
-    return True, pos, vals + (pos,)
+    return True, pos, pos, vals + (pos,)
 position.is_peg = True
