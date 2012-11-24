@@ -76,18 +76,13 @@ def _parse(rules, actions, rule, text):
     def parse_rule(name, pos):
         farthest = pos
         for alternative in rules[name]:
-            far, pos1, vals1 = parse_sequence(alternative, pos)
-            farthest = max(farthest, far)
+            pos1, vals1 = pos, ()
+            for token in alternative:
+                far, pos1, vals1 = parse_token(token, pos1, vals1)
+                farthest = max(farthest, far)
+                if pos1 is None: break
             if pos1 is not None: return farthest, pos1, vals1
         return farthest, None, ()
-
-    def parse_sequence(tokens, pos):
-        farthest, vals = pos, ()
-        for token in tokens:
-            far, pos, vals = parse_token(token, pos, vals)
-            farthest = max(farthest, far)
-            if pos is None: break
-        return farthest, pos, vals
 
     def parse_token(token, pos, vals):
         if re.match(r'!.', token):
