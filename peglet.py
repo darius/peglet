@@ -97,7 +97,7 @@ def _parse(rules, actions, rule, text):
             else: return pos, pos, (f(*vals),)
         else:
             if re.match(_identifier+'$', token):
-                raise BadGrammar("Missing rule: %s" % token)
+                raise BadGrammar("Missing rule", token)
             if re.match(r'/.+/$', token): token = token[1:-1]
             m = re.match(token, text[pos:])
             if m: return pos + m.end(), pos + m.end(), vals + m.groups()
