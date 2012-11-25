@@ -49,7 +49,7 @@ def Parser(grammar, **actions):
     Traceback (most recent call last):
     Unparsable: ('one_expr', '(too) ', '(many) (exprs)')
     """
-    parts = re.split(r' ('+_identifier+') += ', ' '+re.sub(r'\s', ' ', grammar))
+    parts = re.split(' ('+_identifier+') += ', ' '+re.sub(r'\s', ' ', grammar))
     if not parts: raise BadGrammar("No grammar")
     if parts[0].strip(): raise BadGrammar("Missing left hand side", parts[0])
     if len(set(parts[1::2])) != len(parts[1::2]):
@@ -81,7 +81,7 @@ def _parse(rules, actions, rule, text):
                 far, pos1, vals1 = parse_token(token, pos1, vals1)
                 farthest = max(farthest, far)
                 if pos1 is None: break
-            if pos1 is not None: return farthest, pos1, vals1
+            else: return farthest, pos1, vals1
         return farthest, None, ()
 
     def parse_token(token, pos, vals):
