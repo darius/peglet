@@ -1,10 +1,13 @@
 """
 Parsing with PEGs, or a minimal usable subset thereof.
+Background at http://bford.info/packrat/
 """
 
 import re
 
 def _memo(f):
+    """Return a function like f but caching its results. Its arguments
+    must be hashable."""
     memos = {}
     def memoized(*args):
         try: return memos[args]
@@ -112,5 +115,6 @@ def hug(*xs): return xs
 def join(*strs): return ''.join(strs)
 
 def position(text, pos, vals):
+    "A peglet action: always succeed, producing the current position."
     return pos, pos, vals + (pos,)
 position.is_peg = True
