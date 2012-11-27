@@ -1,5 +1,25 @@
 from peglet import Parser, attempt, hug, join, position
 
+def Tag(label):
+    return lambda *parts: (label,) + parts
+
+name = Parser(r"""
+name    = title first middle last
+title   = title_ Title _ | 
+title_  = (Dr|Mr|Ms|Mrs|St)[.]? | (Pope(?:ss)?)
+first   = ([A-Za-z]+) First _
+middle  = middle_ Middle _ | 
+middle_ = ([A-Z])[.] | ([A-Za-z]+)
+last    = ([A-Za-z]+) Last
+_       = \s+
+""",
+              Title  = Tag('title'),
+              First  = Tag('first'),
+              Middle = Tag('middle'),
+              Last   = Tag('last'))
+## name('Popess Darius Q. Bacon')
+#. (('title', 'Popess'), ('first', 'Darius'), ('middle', 'Q'), ('last', 'Bacon'))
+
 ichbins = Parser(r"""
 main     =  _ sexp
 
