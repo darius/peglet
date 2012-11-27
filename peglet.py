@@ -52,9 +52,12 @@ def Parser(grammar, **actions):
     Traceback (most recent call last):
     Unparsable: ('one_expr', '(too) ', '(many) (exprs)')
     """
-    parts = re.split(' ('+_identifier+') += ', ' '+re.sub(r'\s', ' ', grammar))
-    if not parts: raise BadGrammar("No grammar")
-    if parts[0].strip(): raise BadGrammar("Missing left hand side", parts[0])
+    parts = re.split(' ('+_identifier+') += ',
+                     ' '+re.sub(r'\s', ' ', grammar))
+    if not parts:
+        raise BadGrammar("No grammar")
+    if parts[0].strip():
+        raise BadGrammar("Missing left hand side", parts[0])
     if len(set(parts[1::2])) != len(parts[1::2]):
         raise BadGrammar("Multiply-defined rule(s)", grammar)
     rules = dict((lhs, [alt.split() for alt in (' '+rhs+' ').split(' | ')])
