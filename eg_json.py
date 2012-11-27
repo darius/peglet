@@ -9,11 +9,11 @@ literals = dict(true=True,
                 null=None)
 escapes = dict(b='\b', f='\f', n='\n', r='\r', t='\t')
 
-mk_object = lambda *pairs: dict(pairs)
+mk_object  = lambda *pairs: dict(pairs)
 mk_literal = literals.get
-escape = escapes.get
-u_escape = lambda hex_digits: chr(hex(hex_digits))
-mk_number = float
+escape     = escapes.get
+u_escape   = lambda hex_digits: chr(hex(hex_digits))
+mk_number  = float
 
 # Following http://www.json.org/
 json_parse = Parser(r"""
