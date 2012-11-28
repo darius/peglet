@@ -116,8 +116,14 @@ def _parse(rules, actions, rule, text):
     else: return vals
 
 # Some often-used actions:
-def hug(*xs): return xs
-def join(*strs): return ''.join(strs)
+
+def hug(*xs):
+    "Return a tuple of all the arguments."
+    return xs
+
+def join(*strs):
+    "Return all the arguments (strings) concatenated into one string."
+    return ''.join(strs)
 
 def position(text, pos, vals):
     "A peglet action: always succeed, producing the current position."
