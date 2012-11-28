@@ -1,0 +1,2 @@
+recursive-include examples *
+include CHANGES LICENSE MANIFEST.in README.rst
