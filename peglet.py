@@ -1,3 +1,5 @@
+# (c) 2012 Darius Bacon
+# Licensed under the GNU General Public Licence version 3
 """
 Parsing with PEGs, or a minimal usable subset thereof.
 Background at http://bford.info/packrat/
