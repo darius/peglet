@@ -66,8 +66,11 @@ def Parser(grammar, **actions):
                  for lhs, rhs in zip(parts[1::2], parts[2::2]))
     return lambda text, rule=parts[1]: _parse(rules, actions, rule, text)
 
-class BadGrammar(Exception): pass
-class Unparsable(Exception): pass
+class BadGrammar(Exception):
+    "A peglet grammar was ill-formed."
+
+class Unparsable(Exception):
+    "An attempted parse failed because the input did not match the grammar."
 
 def attempt(parse, *args, **kwargs):
     "Call a parser, but return None on failure instead of raising Unparsable."
