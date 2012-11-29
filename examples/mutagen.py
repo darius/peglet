@@ -64,7 +64,13 @@ def Chooser(pairs, method):
     totals = []
     for w in weights:
         totals.append(w + totals[-1] if totals else w)
-    return lambda rng: gens[bisect.bisect(totals, method(rng, totals[-1]))](rng)
+    def chooser(rng):
+        i = bisect.bisect(totals, method(rng, totals[-1]))
+        # Don't assume i is in range, because the grammar might have
+        # inconsistent uses of a fix-tag (with different numbers of
+        # choices or sums of weights).
+        return gens[i % len(gens)](rng)
+    return chooser
 
 def separator(punctuation):
     return sequence(abut, literal(punctuation))
