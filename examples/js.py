@@ -215,7 +215,7 @@ esc_char = \\(['"/\\])
          | \\u xd xd xd xd   join u_escape
 xd       = ([0-9a-fA-F])
 
-_          = (?:\s|//[^\n]*\n?)*
+_          = (?:\s|//.*)*
 """
 
 p = Parser(grammar,

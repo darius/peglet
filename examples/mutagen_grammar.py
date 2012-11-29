@@ -50,7 +50,7 @@ word    = ([A-Za-z0-9']+) _
 
 name    = (-[A-Za-z0-9'-]+-) _
 number  = (\d+) _              int
-_       = (?:\s|#.*\n?)*
+_       = (?:\s|#.*)*
 """, 
                hug=hug,
                int=int,
