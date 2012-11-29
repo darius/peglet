@@ -105,12 +105,12 @@ eg = """
 -day-of-week- = Monday / Tuesday / Wednesday / Thursday / Friday / Saturday
 -day-part- = day / afternoon / morning / evening
 -time-unit- = week / month / season
--day-weather- = [1] rainy / foggy / blistering / blustery / gloomy / dank / [2] ()
+-day-weather- = [1] (rainy / foggy / blistering / blustery / gloomy / dank) / [2] ()
 -two-to-six- = two / three / four / five / six / some
 -person-description- = -name- ([2] -comma-description-phrase- / [1] ())
 -comma-description-phrase- = , -a-an- ([1] -person-adjective- / [1] ()) -descriptor- ([1] -descriptor-modifier- / [2] ()) ,
 -descriptor-modifier- = of -intensifier- (perspicacity / fortitude / passion / wit / perception / presence of mind)
--descriptor- = [1] -neutral-descriptor- / [1] gender{ -male-descriptor- / -female-descriptor- }
+-descriptor- = [1] -neutral-descriptor- / [1] (gender{ -male-descriptor- / -female-descriptor- })
 -female-descriptor- = young miss / girl / maiden / flapper
 -male-descriptor- = stalwart / gentleman / boy / youth
 -neutral-descriptor- = toddler / aesthete / writer / artist
@@ -123,4 +123,4 @@ eg = """
 """
 rules = parse(eg)
 ## mutagen(rules['-root-'], 0)
-#. 'It was five months ago that Etienne, a boy of some perspicacity, sublimated.'
+#. 'It was three months ago that Etienne, a youth of notable perspicacity, sublimated.'
