@@ -1,5 +1,5 @@
 """
-Parse Mutagen grammars from a hopefull human-friendly format.
+Parse Mutagen grammars from a hopefully human-friendly format.
 Then have them generate random text.
 """
 
