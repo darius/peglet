@@ -278,8 +278,8 @@ eg2 = r"""function parseAll(peg, input) {
 
 ## p(eg2)
 #. Traceback (most recent call last):
-#.   File "/home/darius/git/peglet/peglet.py", line 59, in <lambda>
+#.   File "/home/darius/git/peglet/examples/peglet.py", line 67, in <lambda>
 #.     return lambda text, rule=parts[1]: _parse(rules, actions, rule, text)
-#.   File "/home/darius/git/peglet/peglet.py", line 107, in _parse
+#.   File "/home/darius/git/peglet/examples/peglet.py", line 118, in _parse
 #.     if pos is None: raise Unparsable(rule, text[:far], text[far:])
 #. Unparsable: ('Program', 'function parseAll(peg, input) {\n    var maxP = {p: 0};\n    var r = pegSequence([peg, pegEndOfInput])', '(input, maxP, 0);\n    if (!r) throw new Error("Bad syntax: "\n                            + input.slice(0, maxP.p) + \'>><<\'\n                            + input.slice(maxP.p));\n    return r.value;\n}\n')
