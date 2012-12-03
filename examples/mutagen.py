@@ -9,7 +9,7 @@ TODO:
   - compare to original and learn from the difference
 """
 
-import bisect, collections, itertools, random, string
+import bisect, collections, itertools, random
 
 def mutagen(gen, seed=None):
     "Return a random-ish string chosen according to gen and seed."
@@ -126,7 +126,7 @@ def abut_insn(space, cap, insns):
     return render('', cap, insns)
 
 def capitalize_insn(space, cap, insns):
-    return render(space, string.capitalize, insns)
+    return render(space, str.capitalize, insns)
 
 def a_an_insn(space, cap, insns):
     rest = render(' ', no_op, insns)

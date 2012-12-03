@@ -93,7 +93,7 @@ sum_nums = lambda s: sum(nums(s))
 ## sum_nums('10,30,43')
 #. 83
 
-one_word = Parser("word = \w+ position", position=position)
+one_word = Parser(r"word = \w+ position", position=position)
 
 ## one_word('hello')
 #. (5,)

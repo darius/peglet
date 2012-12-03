@@ -121,6 +121,6 @@ eg = """
 -male-name- = Bernard / Joseph / Emmett / Ogden / Eugene / Xerxes / Joshua / Lemuel / Etienne
 -female-name- = Emmalissa / Chloe / Tiffani / Eunice / Zoe / Jennifer / Imelda / Yvette / Melantha
 """
-rules = parse(eg)
-## mutagen(rules['-root-'], 0)
-#. 'It was three months ago that Etienne, a youth of notable perspicacity, sublimated.'
+goreyfate = parse(eg)
+## mutagen(goreyfate['-root-'], 0)
+#. 'It was four seasons ago that Bernard, a youth of great wit, evaporated.'
