@@ -1,9 +1,103 @@
 # (c) 2012 Darius Bacon
 # Licensed under the GNU General Public Licence version 3
-"""
-Parsing with PEGs, or a minimal usable subset thereof.
-Background at http://bford.info/packrat/
-"""
+'''
+Peglet extends Python's regular expressions to handle recursive
+grammars. It aims to be the simplest generally-useful parsing library.
+
+For example, to parse a tiny subset of HTML:
+
+    >>> grammar = r"""
+    ... parts = part parts | 
+    ... part  = <(\w+)> parts </\w+> group
+    ...       | ([^<]+)
+    ... """
+    >>> some_html = Parser(grammar, group=lambda *values: values)
+    >>> some_html("Hello. <p><em>Nesting</em> for <i>the win</i>.</p>")
+    ('Hello. ', ('p', ('em', 'Nesting'), ' for ', ('i', 'the win'), '.'))
+
+Just as with regular expressions, we write the grammar in a raw string
+(like r"") to preserve backslash characters. This grammar has two
+rules, for `parts` and for `part`. `parts` matches either `part`
+followed by more `parts`, or nothing (the empty string). `part`
+matches either `parts` surrounded by open and close tags, or one or
+more characters different from `<`.
+
+The output is built out of regex captures (like `(\w+)`) and semantic
+actions (like `group=lambda *values: values`). Here the `group`
+function is called with the `(\w+)` capture along with the values
+produced by the nested `parts`; then `group`'s return value becomes
+the single value produced for `part`. A successful parse, in general,
+always produces a tuple of values. (So for `part` the result is a
+1-tuple from either `group` or `([^<]+)`; and `parts` produces a tuple
+of any length, either concatenating the tuples from `part` and `parts`
+or producing () for the empty string.)
+
+Prefix matching and error handling
+----------------------------------
+
+Like `re.match`, we try to match a prefix of the input:
+
+    >>> some_html("This <tag> has no close-tag, which our grammar insists on.")
+    ('This ',)
+
+To ensure we match the whole input, explicitly match the end with `!.`
+where the `!` means to fail if the match against `.` succeeds:
+
+    >>> full_grammar = r"html = parts !. " + grammar
+    >>> some_html = Parser(full_grammar, group=lambda *values: values)
+
+Now the ungrammatical input causes an error:
+
+    >>> some_html("This <tag> has no close-tag, which our grammar insists on.")
+    Traceback (most recent call last):
+    Unparsable: ('html', 'This <tag> has no close-tag, which our grammar insists on.', '')
+
+The `Unparsable` exception tells you the string up to the point the
+error was detected, plus the rest of the string (`''` here, which
+admittedly is not much help). To get `None` from a parse failure
+instead, use `attempt`:
+
+    >>> attempt(some_html, "This <tag> has no close-tag, which our grammar insists on.")
+    >>> attempt(some_html, "<i>Hi</i>")
+    (('i', 'Hi'),)
+
+(This is not the default interface because most often you do want to
+know the location of parse errors.)
+
+Grammars
+--------
+
+A peglet grammar is a kind of Parsing Expression Grammar, as explained
+at http://bford.info/packrat/. Unlike in context-free grammars, the `
+| ` operator means *committed* choice: when parsing `a | b`, if `a`
+matches, then `b` is never checked against the same part of the input.
+Also, we have a `!` operator. The rest in details:
+
+A grammar is a string of rules like "a = b c | d". All the tokens
+making up the rules must be whitespace-separated. Each token (besides
+'=' and '|') is a regex, a rule name, or an action name. (Possibly
+preceded by '!' for negation.) Note that '=' or '|' can appear inside
+a regex token, but there it must not be surrounded by whitespace.
+
+A regex token is either /<chars>/ or any non-identifier; an
+identifier that's not a defined rule or action name is an
+error. (So, an incomplete grammar gets you a BadGrammar exception
+instead of a wrong parse.)
+
+Matching a regex token with captures produces a tuple of all the
+captures strings. Matching a sequence of tokens produces the
+concatenation of the results from each. A semantic action takes all
+the results produced so far for the current rule and replaces them
+with one value, the result of calling the function defined for the
+action (supplied as a keyword argument to the Parser constructor).
+Finally, `!foo` produces only `()`.
+
+Actions
+-------
+
+For convenience the module supplies some commonly-used semantic
+actions (`hug`, `join`, and `position`).
+'''
 
 import re
 
@@ -21,20 +115,8 @@ def _memo(f):
 _identifier = r'[A-Za-z_]\w*'
 
 def Parser(grammar, **actions):
-    r"""Make a parsing function from a PEG grammar. You supply the
-    grammar as a string of rules like "a = b c | d". All the tokens
-    making up the rules must be whitespace-separated. Each token
-    (besides '=' and '|') is a regex, a rule name, or an action
-    name. (Possibly preceded by '!' for negation: !foo successfully
-    parses when foo *fails* to parse.)
-
-    A regex token is either /<chars>/ or any non-identifier; an
-    identifier that's not a defined rule or action name is an
-    error. (So, an incomplete grammar gets you a BadGrammar exception
-    instead of a wrong parse.)
-
-    Results get added by regex captures and transformed by actions.
-    (Use keyword arguments to bind the action names to functions.)
+    r"""Make a parsing function from a peglet grammar, defining the
+    grammar's semantic actions with keyword arguments.
 
     The parsing function maps a string to a results tuple or raises
     Unparsable. (It can optionally take a rule name to start from, by

@@ -11,7 +11,7 @@ star     = lambda p: '(%s)*' % p
 plus     = lambda p: '(%s)+' % p
 optional = lambda p: '(%s)?' % p
 oneof    = lambda chars: '[%s]' % chars
-someone  = lambda: '.'
+dot      = lambda: '.'
 literal  = repr
 
 regex_parse = Parser(r"""
@@ -31,7 +31,7 @@ factor  = primary [*]     star
 
 primary = \( exp \)
         | \[ charset \]   join oneof
-        | [.]             someone
+        | [.]             dot
         | \\(.)           literal
         | ([^.()*+?|[\]]) literal
 
