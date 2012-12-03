@@ -30,12 +30,12 @@ start         = url $
 url           = httpaddress | ftpaddress | mailtoaddress
 
 ftpaddress    = ftp:// login [/] path opt_ftptype
-opt_ftptype   = ; ftptype | 
+opt_ftptype   = ; ftptype |
 
 login         = opt_userpass hostport
 opt_userpass  = user : password @
               | user @
-              | 
+              |
 user          = alphanum2 user
               | alphanum2
 password      = alphanum2 password
@@ -50,9 +50,9 @@ formcode      = [NTC]
 mailtoaddress = mailto: xalphas @ hostname
 
 httpaddress   = http:// hostport opt_path opt_search opt_fragment
-opt_path      = / path       join mk_path | 
-opt_search    = [?] search   join mk_search | 
-opt_fragment  = # fragmentid join mk_fragment | 
+opt_path      = / path       join mk_path |
+opt_search    = [?] search   join mk_search |
+opt_fragment  = # fragmentid join mk_fragment |
 
 hostport      = host : port
               | host
@@ -67,7 +67,7 @@ port          = digits   join mk_port
 
 path          = segment (/) path
               | segment
-              | 
+              |
 segment       = xpalphas
 
 search        = xalphas ([+]) search
@@ -90,7 +90,7 @@ alpha         = ([a-zA-Z])
 digit         = (\d)
 safe          = ([$_@.&+-])
 extra         = ([!*"'(),])
-escape        = (%) hex hex 
+escape        = (%) hex hex
 hex           = ([\dA-Fa-f])
 digits        = (\d+)
 alphanum      = alpha | digit

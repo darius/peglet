@@ -180,10 +180,10 @@ Descriptor = wchoice({NeutralDescriptor: 1,
                       by_gender({MaleDescriptor: 1, FemaleDescriptor: 1}): 1})
 
 DescriptorModifier = ("of", Intensifier,
-                      choice("perspicacity", "fortitude", "passion", "wit", 
+                      choice("perspicacity", "fortitude", "passion", "wit",
                              "perception", "presence of mind"))
 
-CommaDescriptionPhrase = (comma, a_an, 
+CommaDescriptionPhrase = (comma, a_an,
                           wchoice({PersonAdjective: 1, empty: 1}),
                           Descriptor,
                           wchoice({DescriptorModifier: 1, empty: 2}),

@@ -82,9 +82,9 @@ _        = \s*
 
 ## json_parse('["testing", 1, 2, 3]')
 #. (('testing', 1.0, 2.0, 3.0),)
-    
+
 ## json_parse('-123.456e+789')
 #. (-inf,)
-    
+
 ## json_parse('{"age": 21, "state":"CO","occupation":"rides the rodeo"}')
 #. ({'age': 21.0, 'state': 'CO', 'occupation': 'rides the rodeo'},)

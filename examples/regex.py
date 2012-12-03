@@ -36,7 +36,7 @@ primary = \( exp \)
         | ([^.()*+?|[\]]) literal
 
 charset = char charset
-        | 
+        |
 char    = \\(.)
         | ([^\]])
 

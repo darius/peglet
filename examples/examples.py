@@ -5,10 +5,10 @@ def Tag(label):
 
 name = Parser(r"""
 name    = title first middle last
-title   = title_ Title _ | 
+title   = title_ Title _ |
 title_  = (Dr|Mr|Ms|Mrs|St)[.]? | (Pope(?:ss)?)
 first   = ([A-Za-z]+) First _
-middle  = middle_ Middle _ | 
+middle  = middle_ Middle _ |
 middle_ = ([A-Z])[.] | ([A-Za-z]+)
 last    = ([A-Za-z]+) Last
 _       = \s+
@@ -34,7 +34,7 @@ sexps    =  sexp sexps
 
 qchars   =  \\(.) qchars
          |  ([^"]) qchars
-         | 
+         |  
 
 symchars =  symchar symchars
          |  symchar
@@ -166,7 +166,7 @@ qchars =   qchar qchars
        |               
 qchar  =   ([^"])
        |   "" dquote
-""", 
+""",
              join = join,
              dquote = lambda: '"')
 
@@ -183,14 +183,14 @@ qchar  =   ([^"])
 
 def p(grammar, text, **kwargs):
     parse = Parser(grammar, **globals())
-    try: 
+    try:
         return parse(text, **kwargs)
     except Unparsable, e:
         return e
 
 metagrammar = r"""
 grammar       =  _ rules
-rules         =  rule rules               
+rules         =  rule rules
               |  rule
 rule          =  name [=] _ expr \. _       make_rule
 expr          =  term \| _ expr             alt

@@ -27,7 +27,7 @@ def parse(grammar):
 
     parser = Parser(r"""
 grammar = _ rules
-rules   = rule rules | 
+rules   = rule rules |
 
 rule    = name [=] _ exp       hug
 
@@ -51,7 +51,7 @@ word    = ([A-Za-z0-9']+) _
 name    = (-[A-Za-z0-9'-]+-) _
 number  = (\d+) _              int
 _       = (?:\s|#.*)*
-""", 
+""",
                hug=hug,
                int=int,
                mk_choice  = lambda *pairs: pairs[0][0] if 1 == len(pairs) else weighted_choice(dict(pairs)),
