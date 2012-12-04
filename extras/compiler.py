@@ -7,13 +7,13 @@ import collections, re
 
 def Parser(grammar):
     # Map the name of each grammar rule to a list of its alternatives.
-
-    parts = re.split(r'\s('+_identifier+')\s+=\s', ' '+grammar)
-    if not parts: raise BadGrammar("No grammar")
-    if parts[0].strip(): raise BadGrammar("Missing left hand side", parts[0])
+    parts = re.split(' ('+_identifier+') += ',
+                     ' '+re.sub(r'\s', ' ', grammar))
+    if len(parts) == 1 or parts[0].strip():
+        raise BadGrammar("Missing left hand side", parts[0])
     if len(set(parts[1::2])) != len(parts[1::2]):
         raise BadGrammar("Multiply-defined rule(s)", grammar)
-    rules = dict((lhs, [alt.split() for alt in re.split(r'\s[|](?:\s|$)', rhs)])
+    rules = dict((lhs, [alt.split() for alt in (' '+rhs+' ').split(' | ')])
                  for lhs, rhs in zip(parts[1::2], parts[2::2]))
 
     def comp():
