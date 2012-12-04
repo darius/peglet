@@ -71,7 +71,7 @@ A peglet grammar is a kind of Parsing Expression Grammar, as explained
 at http://bford.info/packrat/. Unlike in context-free grammars, the
 '|' operator means *committed* choice: when parsing `a | b`, if `a`
 matches, then `b` never gets checked against the same part of the
-input. Also, we have a `!` operator. The rest in details:
+input. Also, we have a `!` operator. The syntax in detail:
 
 A grammar is a string of rules like "a = b c | d". All the tokens
 making up the rules must be whitespace-separated. Each token (besides
