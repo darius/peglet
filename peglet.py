@@ -53,7 +53,7 @@ Now the ungrammatical input causes an error:
     Unparsable: ('html', 'This <tag> has no close-tag, which our grammar insists on.', '')
 
 The `Unparsable` exception tells you the string up to the point the
-error was detected, plus the rest of the string (`''` here, which
+error was detected at, plus the rest of the string (`''` here, which
 admittedly is not much help). To get `None` from a parse failure
 instead, use `attempt`:
 
@@ -61,17 +61,17 @@ instead, use `attempt`:
     >>> attempt(some_html, "<i>Hi</i>")
     (('i', 'Hi'),)
 
-(This is not the default interface because most often you do want to
-know the location of parse errors.)
+(The default interface raises Unparsable because most often you do
+want to know the location of parse errors.)
 
 Grammars
 --------
 
 A peglet grammar is a kind of Parsing Expression Grammar, as explained
-at http://bford.info/packrat/. Unlike in context-free grammars, the `
-| ` operator means *committed* choice: when parsing `a | b`, if `a`
-matches, then `b` is never checked against the same part of the input.
-Also, we have a `!` operator. The rest in details:
+at http://bford.info/packrat/. Unlike in context-free grammars, the
+'|' operator means *committed* choice: when parsing `a | b`, if `a`
+matches, then `b` never gets checked against the same part of the
+input. Also, we have a `!` operator. The rest in details:
 
 A grammar is a string of rules like "a = b c | d". All the tokens
 making up the rules must be whitespace-separated. Each token (besides
@@ -85,18 +85,23 @@ error. (So, an incomplete grammar gets you a BadGrammar exception
 instead of a wrong parse.)
 
 Matching a regex token with captures produces a tuple of all the
-captures strings. Matching a sequence of tokens produces the
+captured strings. Matching a sequence of tokens produces the
 concatenation of the results from each. A semantic action takes all
 the results produced so far for the current rule and replaces them
 with one value, the result of calling the function defined for the
 action (supplied as a keyword argument to the Parser constructor).
-Finally, `!foo` produces only `()`.
+Finally, `!foo` produces only `()` on success.
 
 Actions
 -------
 
-For convenience the module supplies some commonly-used semantic
-actions (`hug`, `join`, and `position`).
+For convenience we supply some commonly-used semantic actions (`hug`,
+`join`, and `position`).
+
+`position` is special: it produces the current position in the string
+being parsed. Special actions like this can be defined by setting
+their `peglet_action` attribute; but the protocol for such actions is
+undocumented.
 '''
 
 import re
@@ -178,7 +183,7 @@ def _parse(rules, actions, rule, text):
             return far, pos1, pos1 is not None and vals + vals1
         elif token in actions:
             f = actions[token]
-            if hasattr(f, 'is_peg'): return f(text, pos, vals) 
+            if hasattr(f, 'peglet_action'): return f(text, pos, vals) 
             else: return pos, pos, (f(*vals),)
         else:
             if re.match(_identifier+'$', token):
@@ -205,4 +210,4 @@ def join(*strs):
 def position(text, pos, vals):
     "A peglet action: always succeed, producing the current position."
     return pos, pos, vals + (pos,)
-position.is_peg = True
+position.peglet_action = True
