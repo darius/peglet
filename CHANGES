@@ -1,4 +1,18 @@
+0.1.1 (2012-12-04)
+------------------
+
+Improved README with an example.
+
+
 0.1.0 (2012-12-03)
 ------------------
 
 Initial release.
+
+See https://github.com/darius/sketchbook/tree/master/parsing
+for some early sketches.
+
+See http://www.udacity.com/wiki/CS212%20Unit%203%20Code?course=cs212#grammarpy
+and http://www.inf.puc-rio.br/~roberto/lpeg/ for some influences.
+
+Thanks to Kragen Sitaker for ideas about the syntax.
