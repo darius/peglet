@@ -155,7 +155,7 @@ p    =  /WHEE/ replace
 #. 'hi there GLARGGLARG to you GLARGEE'
 
 csv = Parser(r"""
-record =   field fields $
+record =   field fields !.
 fields =   , field fields
        |   
 
