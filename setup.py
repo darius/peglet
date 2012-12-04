@@ -12,7 +12,7 @@ setup(name = 'Peglet',
       long_description = open('README.rst').read(),
       license = 'GNU General Public License (GPL)',
       classifiers = [
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Education',
         'License :: OSI Approved :: GNU General Public License (GPL)',
