@@ -123,18 +123,12 @@ def Parser(grammar, **actions):
     default the first in the grammar.) It doesn't necessarily match
     the whole input, just a prefix.
 
-    >>> parse_s_expression = Parser(r'''
-    ... one_expr = _ expr !.
-    ... _        = \s*
-    ... expr     = \( _ exprs \) _  hug
-    ...          | ([^()\s]+) _
-    ... exprs    = expr exprs
-    ...          | ''',             hug = lambda *vals: vals)
-    >>> parse_s_expression('  (hi (john mccarthy) (()))')
-    (('hi', ('john', 'mccarthy'), ((),)),)
-    >>> parse_s_expression('(too) (many) (exprs)')
+    >>> nums = Parser(r"nums = num ,\s* nums | num   num = (\d+) int", int=int)
+    >>> nums('42, 137, and 0 are magic numbers')
+    (42, 137)
+    >>> nums('The magic numbers are 42, 137, and 0')
     Traceback (most recent call last):
-    Unparsable: ('one_expr', '(too) ', '(many) (exprs)')
+    Unparsable: ('nums', '', 'The magic numbers are 42, 137, and 0')
     """
     parts = re.split(' ('+_identifier+') += ',
                      ' '+re.sub(r'\s', ' ', grammar))
