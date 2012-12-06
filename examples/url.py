@@ -1,5 +1,5 @@
 """
-Example: parse JSON.
+Example: parse URLs.
 """
 
 from peglet import *
