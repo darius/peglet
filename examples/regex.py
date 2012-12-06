@@ -2,11 +2,11 @@
 Example: parse regular expressions.
 """
 
-from peglet import *
+from peglet import Parser, join, attempt
 
 empty    = lambda: '""'
 chain    = lambda p, q: '(%s %s)' % (p, q)
-either   = lambda p, q: '(%s|%s)' % (p, q)
+either   = lambda p, q: '(%s | %s)' % (p, q)
 star     = lambda p: '(%s)*' % p
 plus     = lambda p: '(%s)+' % p
 optional = lambda p: '(%s)?' % p
@@ -43,7 +43,7 @@ char    = \\(.)
 """, **globals())
 
 ## print regex_parse('a[xy]z()*|dc..hello')[0]
-#. (('a' ([xy] ('z' ("")*)))|('d' ('c' (. (. ('h' ('e' ('l' ('l' 'o')))))))))
+#. (('a' ([xy] ('z' ("")*))) | ('d' ('c' (. (. ('h' ('e' ('l' ('l' 'o')))))))))
 #. 
 
 ## attempt(regex_parse, '{"hi"](')
