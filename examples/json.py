@@ -7,11 +7,10 @@ from peglet import *
 literals = dict(true=True,
                 false=False,
                 null=None)
+mk_literal = literals.get
 
 mk_object  = lambda *pairs: dict(pairs)
-mk_literal = literals.get
-escape     = lambda s: s.decode('string-escape')
-u_escape   = lambda s: s.decode('unicode-escape')
+escape     = lambda s: s.decode('unicode-escape')
 mk_number  = float
 
 # Following http://www.json.org/
@@ -39,7 +38,7 @@ chars    = char chars
 char     = ([^\x00-\x1f"\\])
          | \\(["/\\])
          | (\\[bfnrt])            escape
-         | (\\u) xd xd xd xd join u_escape
+         | (\\u) xd xd xd xd join escape
 xd       = ([0-9a-fA-F])
 
 number   = int frac exp _    join mk_number
