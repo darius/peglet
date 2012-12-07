@@ -4,9 +4,9 @@ Parsing infix expressions that can associate left-to-right, like
 is tricky, I'm afraid, because here's the natural way to express
 it in a grammar, which doesn't work:
 
-  expr = expr (-) factor   hug
+  expr = expr (-) term   hug
        | expr
-  factor = (\d+)
+  term = (\d+)
 
 This dies with a stack overflow because of the recursion
   expr = expr ...
@@ -14,27 +14,27 @@ This dies with a stack overflow because of the recursion
 By moving the recursive call over to the right, we can fix this,
 at the cost of producing the wrong parse tree:
 
-  expr = factor (-) expr   hug
-       | factor
-  factor = (\d+)
+  expr = term (-) expr   hug
+       | term
+  term = (\d+)
 
 This would parse it like 5-(3-1) instead. So, in the code below, we
 first build the wrong tree this way, but tagging the parts that are
 wrong (with misassociated()); then we fix them up in reassociate().
 
-It's a hack. I don't see a better way without making the parsing
-library more complex. (Suggestions solicited.)
+It's a hack. I don't see a better way without making peglet more
+complex. (Ideas solicited.)
 """
 
 from peglet import Parser, hug
 
 def misassociated(x, op, y):
-    return 'assoc', x, op, y
+    return 'misassoc', x, op, y
 
 def reassociate(exp):
-    if isinstance(exp, tuple) and exp[0] == 'assoc':
+    if isinstance(exp, tuple) and exp[0] == 'misassoc':
         _, t, op1, rhs = exp
-        while isinstance(rhs, tuple) and rhs[0] == 'assoc':
+        while isinstance(rhs, tuple) and rhs[0] == 'misassoc':
             _, u, op2, v = rhs
             # t <op1> (u <op2> v) ==> (t <op1> u) <op2> v
             # e.g.    t - (u + v) ==> (t - u) + v
@@ -43,24 +43,24 @@ def reassociate(exp):
     return exp
 
 calc = Parser(r"""
-top    = _ exp0 $
+top  = _ exp0 $
 
-exp0   = exp0a                  reassociate
-exp0a  = exp1 ([+-]) _ exp0a    misassociated
-       | exp1
+exp0 = mis0                  reassociate
+mis0 = exp1 ([+-]) _ mis0    misassociated
+     | exp1
 
-exp1   = exp1a                  reassociate
-exp1a  = exp2 ([*/%]) _ exp1a   misassociated
-       | exp2
+exp1 = mis1                  reassociate
+mis1 = exp2 ([*/%]) _ mis1   misassociated
+     | exp2
 
-exp2   = factor (\^) _ exp2     hug
-       | factor
+exp2 = term (\^) _ exp2      hug
+     | term
 
-factor = (-) _ factor           hug
-       | ([\d+]) _              int
-       | \( exp0 \)
+term = (-) _ exp1            hug
+     | ([\d+]) _             int
+     | \( _ exp0 \) _
 
-_      = \s*
+_    = \s*
 """, 
               int=int,
               hug=hug,
