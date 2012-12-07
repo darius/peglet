@@ -11,7 +11,7 @@ literals = dict(true=True,
 mk_object  = lambda *pairs: dict(pairs)
 mk_literal = literals.get
 escape     = lambda s: s.decode('string-escape')
-u_escape   = lambda hex_digits: chr(hex(hex_digits))
+u_escape   = lambda s: s.decode('unicode-escape')
 mk_number  = float
 
 # Following http://www.json.org/
@@ -39,7 +39,7 @@ chars    = char chars
 char     = ([^\x00-\x1f"\\])
          | \\(["/\\])
          | (\\[bfnrt])            escape
-         | \\u xd xd xd xd   join u_escape
+         | (\\u) xd xd xd xd join u_escape
 xd       = ([0-9a-fA-F])
 
 number   = int frac exp _    join mk_number
@@ -66,8 +66,8 @@ _        = \s*
 #. ((1.0, 1.0),)
 ## json_parse('true')
 #. (True,)
-## json_parse(r'"hey \b\n"')
-#. ('hey \x08\n',)
+## json_parse(r'"hey \b\n \u01ab o hai"')
+#. (u'hey \x08\n \u01ab o hai',)
 ## json_parse('{"hey": true}')
 #. ({'hey': True},)
 ## json_parse('[{"hey": true}]')
