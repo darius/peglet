@@ -46,14 +46,10 @@ number   = int frac exp _    join mk_number
          | int frac _        join mk_number
          | int exp _         join mk_number
          | int _             join mk_number
-int      = (-[1-9]) digits
-         | (-) digit
-         | ([1-9]) digits
-         | digit
-frac     = ([.]) digits
-exp      = ([eE][+-]?) digits
-digits   = (\d+)
-digit    = (\d)
+int      = (-?) (0) !\d
+         | (-?) ([1-9]\d*)
+frac     = ([.]\d+)
+exp      = ([eE][+-]?\d+)
 
 _        = \s*
 """, **globals())
@@ -74,7 +70,12 @@ _        = \s*
 #. (({'hey': True},),)
 ## json_parse('[{"hey": true}, [-12.34]]')
 #. (({'hey': True}, (-12.34,)),)
+## json_parse('0')
+#. (0.0,)
+## json_parse('0.125e-2')
+#. (0.00125,)
 
+## attempt(json_parse, '0377')
 ## attempt(json_parse, '{"hi"]')
 
 # Udacity CS212 problem 3.1:
