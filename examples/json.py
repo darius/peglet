@@ -2,7 +2,7 @@
 Example: parse JSON.
 """
 
-from peglet import *
+from peglet import Parser, hug, join, attempt
 
 literals = dict(true=True,
                 false=False,
