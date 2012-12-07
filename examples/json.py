@@ -7,11 +7,10 @@ from peglet import *
 literals = dict(true=True,
                 false=False,
                 null=None)
-escapes = dict(b='\b', f='\f', n='\n', r='\r', t='\t')
 
 mk_object  = lambda *pairs: dict(pairs)
 mk_literal = literals.get
-escape     = escapes.get
+escape     = lambda s: s.decode('string-escape')
 u_escape   = lambda hex_digits: chr(hex(hex_digits))
 mk_number  = float
 
@@ -39,7 +38,7 @@ chars    = char chars
          |
 char     = ([^\x00-\x1f"\\])
          | \\(["/\\])
-         | \\([bfnrt])            escape
+         | (\\[bfnrt])            escape
          | \\u xd xd xd xd   join u_escape
 xd       = ([0-9a-fA-F])
 
@@ -67,8 +66,8 @@ _        = \s*
 #. ((1.0, 1.0),)
 ## json_parse('true')
 #. (True,)
-## json_parse('"hey"')
-#. ('hey',)
+## json_parse(r'"hey \b\n"')
+#. ('hey \x08\n',)
 ## json_parse('{"hey": true}')
 #. ({'hey': True},)
 ## json_parse('[{"hey": true}]')
