@@ -38,7 +38,6 @@ def genseq(x, y, Ns):
     ymatches = y(Ns_y)
     return set(m1+m2 for m1 in xmatches for m2 in ymatches if len(m1+m2) in Ns)
 
-
 regex_parse = Parser(r"""
 regex   = exp $
 
