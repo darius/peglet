@@ -68,5 +68,7 @@ char    = \\(.)
 
 ## generate('a[xy]+z()*|c.hi', range(5))
 #. set(['c?hi', 'axxz', 'axyz', 'ayz', 'axz', 'ayyz', 'ayxz'])
+## generate('(Chloe|Yvette), a( precocious)? (toddler|writer)', range(28))
+#. set(['Yvette, a precocious writer', 'Chloe, a precocious toddler', 'Yvette, a toddler', 'Chloe, a precocious writer', 'Chloe, a writer', 'Chloe, a toddler', 'Yvette, a writer'])
 
 ## attempt(regex_parse, '{"hi"](')
