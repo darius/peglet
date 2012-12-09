@@ -40,7 +40,7 @@ def genseq(x, y, Ns):
 
 
 regex_parse = Parser(r"""
-start   = exp $
+regex   = exp $
 
 exp     = term [|] exp    either
         | term
