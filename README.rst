@@ -20,7 +20,8 @@ I had three goals:
 2. that's simple to adapt or rewrite from scratch if I'm faced with
    some new situation like a new programming language;
 
-3. that inexpert programmers can follow without too much pain. 
+3. with code easy enough to follow that it could introduce people to
+   parsing.
 
 So I aimed for one page of clear code not using combinators. Some bits
 that couldn't fit the constraints overflowed into a combinator
