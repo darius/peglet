@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-version = '0.1.1dev'
+version = '0.1.1'
 
 setup(name = 'Peglet',
       version = version,
@@ -18,7 +18,7 @@ setup(name = 'Peglet',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-#        'Programming Language :: Python :: 2.5',  XXX try it
+        'Programming Language :: Python :: 2.5', # XXX haven't tried it
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
