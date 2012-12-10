@@ -13,21 +13,25 @@ grammars. For example, to parse a tiny subset of HTML:
 >>> a_little_html("Hello. <p><em>Nesting</em> for <i>the win</i>.</p>")
 ('Hello. ', ('p', ('em', 'Nesting'), ' for ', ('i', 'the win'), '.'))
 
-I had three goals:
+The goal was to make a parsing library
 
-1. A parsing library that's pleasant enough to use;
+1. pleasant enough to use;
 
-2. that's simple to adapt or rewrite from scratch if I'm faced with
-   some new situation like a new programming language;
+2. simple to adapt or rewrite from scratch if I'm faced with some new
+   situation like a new programming language;
 
 3. with code easy enough to follow that it could introduce people to
    parsing.
 
-So I aimed for one page of clear code not using combinators. Some bits
-that couldn't fit the constraints overflowed into a combinator
-library, `parson <https://github.com/darius/parson>`_.
+So it came down to one page of clear code not using combinators. (And
+then ballooned to 200+ lines from documentation and a few extras.)
+Some bits that couldn't fit the latter two constraints went into a
+combinator library, `parson <https://github.com/darius/parson>`_.
 
-See the module doc and the examples/ directory for more.
+For more, see `the examples
+<https://github.com/darius/peglet/tree/master/examples>`_ or the
+module doc in `the code
+<https://github.com/darius/peglet/blob/master/peglet.py>`_.
 
 
 Installing it
