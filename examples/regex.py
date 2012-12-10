@@ -10,19 +10,20 @@ https://github.com/darius/halp/blob/master/examples/learn-the-hell-out-of-regula
 from peglet import Parser, join, attempt
 
 def generate(regex, Ns):
-    "Return the set of matches to regex whose length is in Ns."
-    return regex_parse(regex)[0](Ns)
+    "Return the strings matching regex whose length is in Ns."
+    return sorted(regex_parse(regex)[0](Ns),
+                  key=lambda s: (len(s), s))
 
-def literal(s):     return lambda Ns: set([s]) if len(s) in Ns else null
-def either(x, y):   return lambda Ns: x(Ns) | y(Ns)
-def plus(x):        return chain(x, star(x))
-def star(x):        return lambda Ns: optional(chain(nonempty(x), star(x)))(Ns)
-def nonempty(x):    return lambda Ns: x(Ns - set([0]))
-def oneof(chars):   return lambda Ns: set(chars) if 1 in Ns else null
-def chain(x, y):    return lambda Ns: genseq(x, y, Ns)
-def optional(x):    return either(empty(), x)
-def dot():          return oneof('?')  # (Could be more, for lots more output.)
-def empty():        return literal('')
+def literal(s):   return lambda Ns: set([s]) if len(s) in Ns else null
+def either(x, y): return lambda Ns: x(Ns) | y(Ns)
+def plus(x):      return chain(x, star(x))
+def star(x):      return lambda Ns: optional(chain(nonempty(x), star(x)))(Ns)
+def nonempty(x):  return lambda Ns: x(Ns - set([0]))
+def oneof(chars): return lambda Ns: set(chars) if 1 in Ns else null
+def chain(x, y):  return lambda Ns: genseq(x, y, Ns)
+def optional(x):  return either(empty(), x)
+def dot():        return oneof('?')  # (Could be more, for lots more output.)
+def empty():      return literal('')
 
 null = frozenset([])
 
@@ -66,9 +67,11 @@ char    = \\(.)
 
 """, **globals())
 
+## generate('.+', range(5))
+#. ['?', '??', '???', '????']
 ## generate('a[xy]+z()*|c.hi', range(5))
-#. set(['c?hi', 'axxz', 'axyz', 'ayz', 'axz', 'ayyz', 'ayxz'])
+#. ['axz', 'ayz', 'axxz', 'axyz', 'ayxz', 'ayyz', 'c?hi']
 ## generate('(Chloe|Yvette), a( precocious)? (toddler|writer)', range(28))
-#. set(['Yvette, a precocious writer', 'Chloe, a precocious toddler', 'Yvette, a toddler', 'Chloe, a precocious writer', 'Chloe, a writer', 'Chloe, a toddler', 'Yvette, a writer'])
+#. ['Chloe, a writer', 'Chloe, a toddler', 'Yvette, a writer', 'Yvette, a toddler', 'Chloe, a precocious writer', 'Chloe, a precocious toddler', 'Yvette, a precocious writer']
 
 ## attempt(regex_parse, '{"hi"](')
