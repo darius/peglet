@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-version = '0.1.1'
+version = '0.1.2dev'
 
 setup(name = 'Peglet',
       version = version,
@@ -26,5 +26,5 @@ setup(name = 'Peglet',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Text Processing',
         ],
-      keywords = 'parsing',
+      keywords = 'parse,parser,parsing,peg,packrat,regex,grammar',
       )
