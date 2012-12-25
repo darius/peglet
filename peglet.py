@@ -37,7 +37,7 @@ Prefix matching and error handling
 
 Like `re.match`, we try to match a prefix of the input:
 
-    >>> some_html("This <tag> has no close-tag, which our grammar insists on.")
+    >>> some_html("This <tag> won't parse: it lacks a matching close-tag.")
     ('This ',)
 
 To ensure we match the whole input, explicitly match the end with `!.`
@@ -48,16 +48,16 @@ where the `!` means to fail if the match against `.` succeeds:
 
 Now the ungrammatical input causes an error:
 
-    >>> some_html("This <tag> has no close-tag, which our grammar insists on.")
+    >>> some_html("This <tag> won't parse: it lacks a matching close-tag.")
     Traceback (most recent call last):
-    Unparsable: ('html', 'This <tag> has no close-tag, which our grammar insists on.', '')
+    Unparsable: ('html', "This <tag> won't parse: it lacks a matching close-tag.", '')
 
 The `Unparsable` exception tells you the string up to the point the
 error was detected at, plus the rest of the string (`''` here, which
 admittedly is not much help). To get `None` from a parse failure
 instead, use `attempt`:
 
-    >>> attempt(some_html, "This <tag> has no close-tag, which our grammar insists on.")
+    >>> attempt(some_html, "This <tag> won't parse: it lacks a matching close-tag.")
     >>> attempt(some_html, "<i>Hi</i>")
     (('i', 'Hi'),)
 
