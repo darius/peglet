@@ -90,7 +90,10 @@ concatenation of the results from each. A semantic action takes all
 the results produced so far for the current rule and replaces them
 with one value, the result of calling the function defined for the
 action (supplied as a keyword argument to the Parser constructor).
-Finally, `!foo` produces only `()` on success.
+Finally, `!foo` matches when `foo` fails to match; then it consumes no
+input and produces `()`. (Thus `!!foo` serves for lookahead: it
+matches when `foo` matches, but again consumes no input and produces
+only `()`.)
 
 Actions
 -------
