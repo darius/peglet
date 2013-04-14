@@ -1,5 +1,6 @@
 """
 A concatenative variant of John Backus's FP language.
+http://en.wikipedia.org/wiki/FP_%28programming_language%29
 """
 
 from peglet import Parser
@@ -8,7 +9,8 @@ program = {}
 
 primitives = dict(transpose = lambda arg: zip(*arg),
                   distl = lambda (x, ys): [[x, y] for y in ys],
-                  distr = lambda (xs, y): [[x, y] for x in xs],)
+                  distr = lambda (xs, y): [[x, y] for x in xs],
+                  iota = lambda n: range(1, n+1),)
 
 add = lambda (x, y): x+y
 sub = lambda (x, y): x-y
@@ -85,23 +87,29 @@ _       = \s*
 
 
 examples = r"""
-
+factorial == iota \*.
 dot == transpose @* \+.
 matmult == [1, 2 transpose] distr @distl @@dot.
-
 """
 ## program = fp_parse(examples)[0]
 ## program.update(primitives)
-## program['dot']([[1,2], [3,4]])
+## factorial, dot, matmult = map(program.get, 'factorial dot matmult'.split())
+
+## factorial(0)
+#. 1
+## factorial(5)
+#. 120
+
+## dot([[1,2], [3,4]])
 #. 11
-## program['dot']([])
+## dot([])
 #. 0
 
-## program['matmult']([ [], [] ])
+## matmult([ [], [] ])
 #. []
-## program['matmult']([ [[4]], [[5]] ])
+## matmult([ [[4]], [[5]] ])
 #. [[20]]
-## program['matmult']([ [[2,0],[0,2]], [[5,6],[7,8]] ])
+## matmult([ [[2,0],[0,2]], [[5,6],[7,8]] ])
 #. [[10, 12], [14, 16]]
-## program['matmult']([ [[0,1],[1,0]], [[5,6],[7,8]] ])
+## matmult([ [[0,1],[1,0]], [[5,6],[7,8]] ])
 #. [[7, 8], [5, 6]]
