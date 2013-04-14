@@ -7,34 +7,9 @@ from peglet import Parser
 
 program = {}
 
-primitives = dict(
-    concat = lambda lists: sum(lists, []),
-    distl = lambda (x, ys): [[x, y] for y in ys],
-    distr = lambda (xs, y): [[x, y] for x in xs],
-    id = lambda x: x,
-    iota = lambda n: range(1, n+1),
-    length = len,
-    tl = lambda xs: xs[1:],
-    transpose = lambda arg: zip(*arg),
-)
-
-add = lambda (x, y): x + y
-sub = lambda (x, y): x - y
-mul = lambda (x, y): x * y
-div = lambda (x, y): x / y
-eq  = lambda (x, y): x == y
-lt  = lambda (x, y): x < y
-gt  = lambda (x, y): x > y
-
-ops = {'+': add, '-': sub, '*': mul, '/': div, '=': eq, '<': lt, '>': gt}
-
-def function_identity(f):
-    if f in (add, sub): return 0
-    if f in (mul, div): return 1
-    raise Exception("No known identity element", f)
-
 def mk_program(*defs): return dict(defs)
 def mk_def(name, exp): return (name, exp)
+def mk_call(name):     return lambda arg: program[name](arg)
 def mk_if(c, t, e):    return lambda arg: (t if c(arg) else e)(arg)
 def mk_compose(e, f):  return lambda arg: f(e(arg))
 def mk_map(f):         return lambda arg: map(f, arg)
@@ -42,20 +17,8 @@ def mk_insertl(f):     return lambda arg: insertl(f, arg)
 def mk_insertr(f):     return lambda arg: insertr(f, arg)
 def mk_aref(n):        return lambda arg: arg[n-1]
 def mk_literal(n):     return lambda _: n
-def mk_call(name):     return lambda arg: program[name](arg)
 def mk_op(name):       return ops[name]
 def mk_list(*exps):    return lambda arg: [f(arg) for f in exps]
-
-def insertl(f, xs):
-    if not xs: return function_identity(f)
-    return reduce(lambda x, y: f([x, y]), xs)
-
-def insertr(f, xs):
-    if not xs: return function_identity(f)
-    z = xs[-1]
-    for x in xs[-2::-1]:
-        z = f([x, z])
-    return z
 
 fp_parse = Parser(r"""
 program = _ defs $                 mk_program
@@ -93,6 +56,44 @@ name    = ([A-Za-z]\w*) _
 _       = \s*
 
 """, int=int, **globals())
+
+
+def insertl(f, xs):
+    if not xs: return function_identity(f)
+    return reduce(lambda x, y: f([x, y]), xs)
+
+def insertr(f, xs):
+    if not xs: return function_identity(f)
+    z = xs[-1]
+    for x in xs[-2::-1]:
+        z = f([x, z])
+    return z
+
+primitives = dict(
+    concat = lambda lists: sum(lists, []),
+    distl = lambda (x, ys): [[x, y] for y in ys],
+    distr = lambda (xs, y): [[x, y] for x in xs],
+    id = lambda x: x,
+    iota = lambda n: range(1, n+1),
+    length = len,
+    tl = lambda xs: xs[1:],
+    transpose = lambda arg: zip(*arg),
+)
+
+add = lambda (x, y): x + y
+sub = lambda (x, y): x - y
+mul = lambda (x, y): x * y
+div = lambda (x, y): x / y
+eq  = lambda (x, y): x == y
+lt  = lambda (x, y): x < y
+gt  = lambda (x, y): x > y
+
+ops = {'+': add, '-': sub, '*': mul, '/': div, '=': eq, '<': lt, '>': gt}
+
+def function_identity(f):
+    if f in (add, sub): return 0
+    if f in (mul, div): return 1
+    raise Exception("No known identity element", f)
 
 
 examples = r"""
