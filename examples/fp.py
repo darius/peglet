@@ -7,11 +7,15 @@ from peglet import Parser
 
 program = {}
 
-def mk_program(*defs): return dict(defs)
+def FP(text):
+    global program
+    program = dict(primitives)
+    program.update(fp_parse(text))
+
 def mk_def(name, exp): return (name, exp)
 def mk_call(name):     return lambda arg: program[name](arg)
 def mk_if(c, t, e):    return lambda arg: (t if c(arg) else e)(arg)
-def mk_compose(e, f):  return lambda arg: f(e(arg))
+def mk_compose(g, f):  return lambda arg: f(g(arg))
 def mk_map(f):         return lambda arg: map(f, arg)
 def mk_insertl(f):     return lambda arg: insertl(f, arg)
 def mk_insertr(f):     return lambda arg: insertr(f, arg)
@@ -21,7 +25,7 @@ def mk_op(name):       return ops[name]
 def mk_list(*exps):    return lambda arg: [f(arg) for f in exps]
 
 fp_parse = Parser(r"""
-program = _ defs $                 mk_program
+program = _ defs !.
 
 defs    = def defs
         | 
@@ -70,13 +74,13 @@ def insertr(f, xs):
     return z
 
 primitives = dict(
-    concat = lambda lists: sum(lists, []),
-    distl = lambda (x, ys): [[x, y] for y in ys],
-    distr = lambda (xs, y): [[x, y] for x in xs],
-    id = lambda x: x,
-    iota = lambda n: range(1, n+1),
-    length = len,
-    tl = lambda xs: xs[1:],
+    concat    = lambda lists: sum(lists, []),
+    distl     = lambda (x, ys): [[x, y] for y in ys],
+    distr     = lambda (xs, y): [[x, y] for x in xs],
+    id        = lambda x: x,
+    iota      = lambda n: range(1, n+1),
+    length    = len,
+    tl        = lambda xs: xs[1:],
     transpose = lambda arg: zip(*arg),
 )
 
@@ -106,8 +110,7 @@ notyet = r"""
 sort == [length, ~2] < -> id; 
         [1, id] distl [?< @2 sort, ?= @2, ?> @2 sort] concat.
 """
-## program = fp_parse(examples)[0]
-## program.update(primitives)
+## FP(examples)
 ## factorial, dot, matmult = map(program.get, 'factorial dot matmult'.split())
 
 ## factorial(0)
