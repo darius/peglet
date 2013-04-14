@@ -20,7 +20,7 @@ def mk_map(f):         return lambda arg: map(f, arg)
 def mk_insertl(f):     return lambda arg: insertl(f, arg)
 def mk_insertr(f):     return lambda arg: insertr(f, arg)
 def mk_filter(f):      return lambda arg: filter(f, arg)
-def mk_aref(n):        return lambda arg: arg[n-1]
+def mk_aref(n):        return (lambda arg: arg[n-1]) if 0 < n else (lambda arg: arg[n])
 def mk_literal(n):     return lambda _: n
 def mk_op(name):       return ops[name]
 def mk_list(*exps):    return lambda arg: [f(arg) for f in exps]
@@ -44,14 +44,14 @@ factor  = @ _ factor               mk_map
         | \? _ factor              mk_filter
         | primary
 
-primary = decimal                  mk_aref
+primary = integer                  mk_aref
         | ~ _ integer              mk_literal
         | name                     mk_call
         | ([<=>*+-]) !opchar _     mk_op
         | \[ _ list \] _           mk_list
         | \( _ exp \) _
 
-opchar  = [@/\\?<=>*+-]
+opchar  = [\w@/\\?<=>*+-]
 
 list    = exp , _ list
         | exp
@@ -90,6 +90,7 @@ ops = {'+': add, '-': sub, '*': mul, '=': eq, '<': lt, '>': gt}
 
 primitives = dict(
     apndl     = lambda (x, xs): [x] + xs,
+    apndr     = lambda (xs, x): xs + [x],
     concat    = lambda lists: sum(lists, []),
     distl     = lambda (x, ys): [[x, y] for y in ys],
     distr     = lambda (xs, y): [[x, y] for x in xs],
@@ -98,6 +99,7 @@ primitives = dict(
     iota      = lambda n: range(1, n+1),
     length    = len,
     mod       = mod,
+    rev       = lambda xs: xs[::-1],
     tl        = lambda xs: xs[1:],
     transpose = lambda arg: zip(*arg),
 )
@@ -123,12 +125,15 @@ iseven == [id, ~2] divisible.
 max == /(< -> 2; 1).
 
 sort == [length, ~2] < -> id; 
-        [id, 1] distr [?< @2 sort, ?= @2, ?> @2 sort] concat.
+        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] concat.
 
 euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
 
 fibs == [~40, 1] < -> tl; [[1,2] +, id] apndl fibs.
 euler2 == [~2,~1] fibs ?iseven /+.
+
+fibsr == [~40, -1] < -> rev tl rev; [id, [-1,-2] +] apndr fibsr.
+euler2r == [~1,~2] fibsr ?iseven /+.
 """
 
 def defs(names): return [program[name] for name in names.split()]
@@ -144,13 +149,15 @@ def defs(names): return [program[name] for name in names.split()]
 ## qsort([])
 #. []
 ## qsort([3,1,4,1,5,9])
-#. [3, 3, 3, 3, 3, 3]
+#. [1, 1, 3, 4, 5, 9]
 
-## fibs, euler2 = defs('fibs euler2')
+## fibs, euler2, fibsr = defs('fibs euler2 fibsr')
 ## fibs([1,1])
 #. [34, 21, 13, 8, 5, 3, 2, 1, 1]
 ## euler2(0)
 #. 44
+## fibsr([1,1])
+#. [1, 1, 2, 3, 5, 8, 13, 21, 34]
 
 ## divisible([9, 5]), divisible([10, 5]), 
 #. (False, True)
