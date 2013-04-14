@@ -45,7 +45,7 @@ factor  = @ _ factor               mk_map
 primary = decimal                  mk_aref
         | ~ _ integer              mk_literal
         | name                     mk_call
-        | ([<=*/+-]) _             mk_op
+        | ([<=*+-]) _              mk_op
         | \[ _ list \] _           mk_list
         | \( _ exp \) _
 
@@ -73,17 +73,6 @@ def insertr(f, xs):
         z = f([x, z])
     return z
 
-primitives = dict(
-    concat    = lambda lists: sum(lists, []),
-    distl     = lambda (x, ys): [[x, y] for y in ys],
-    distr     = lambda (xs, y): [[x, y] for x in xs],
-    id        = lambda x: x,
-    iota      = lambda n: range(1, n+1),
-    length    = len,
-    tl        = lambda xs: xs[1:],
-    transpose = lambda arg: zip(*arg),
-)
-
 add = lambda (x, y): x + y
 sub = lambda (x, y): x - y
 mul = lambda (x, y): x * y
@@ -92,7 +81,19 @@ eq  = lambda (x, y): x == y
 lt  = lambda (x, y): x < y
 gt  = lambda (x, y): x > y
 
-ops = {'+': add, '-': sub, '*': mul, '/': div, '=': eq, '<': lt, '>': gt}
+ops = {'+': add, '-': sub, '*': mul, '=': eq, '<': lt, '>': gt}
+
+primitives = dict(
+    concat    = lambda lists: sum(lists, []),
+    distl     = lambda (x, ys): [[x, y] for y in ys],
+    distr     = lambda (xs, y): [[x, y] for x in xs],
+    div       = div,
+    id        = lambda x: x,
+    iota      = lambda n: range(1, n+1),
+    length    = len,
+    tl        = lambda xs: xs[1:],
+    transpose = lambda arg: zip(*arg),
+)
 
 def function_identity(f):
     if f in (add, sub): return 0
