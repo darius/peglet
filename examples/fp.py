@@ -47,9 +47,11 @@ factor  = @ _ factor               mk_map
 primary = decimal                  mk_aref
         | ~ _ integer              mk_literal
         | name                     mk_call
-        | ([<=*+-]) _              mk_op
+        | ([<=>*+-]) !opchar _     mk_op
         | \[ _ list \] _           mk_list
         | \( _ exp \) _
+
+opchar  = [@/\\?<=>*+-]
 
 list    = exp , _ list
         | exp
@@ -117,8 +119,7 @@ iszero == [id, ~0] =.
 divisible == mod iszero.
 
 euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
-"""
-notyet = r"""
+
 sort == [length, ~2] < -> id; 
         [1, id] distl [?< @2 sort, ?= @2, ?> @2 sort] concat.
 """
