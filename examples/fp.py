@@ -76,7 +76,8 @@ def insertr(f, xs):
 add = lambda (x, y): x + y
 sub = lambda (x, y): x - y
 mul = lambda (x, y): x * y
-div = lambda (x, y): x / y
+div = lambda (x, y): x // y
+mod = lambda (x, y): x % y
 eq  = lambda (x, y): x == y
 lt  = lambda (x, y): x < y
 gt  = lambda (x, y): x > y
@@ -91,6 +92,7 @@ primitives = dict(
     id        = lambda x: x,
     iota      = lambda n: range(1, n+1),
     length    = len,
+    mod       = mod,
     tl        = lambda xs: xs[1:],
     transpose = lambda arg: zip(*arg),
 )
