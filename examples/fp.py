@@ -89,6 +89,7 @@ gt  = lambda (x, y): x > y
 ops = {'+': add, '-': sub, '*': mul, '=': eq, '<': lt, '>': gt}
 
 primitives = dict(
+    apndl     = lambda (x, xs): [x] + xs,
     concat    = lambda lists: sum(lists, []),
     distl     = lambda (x, ys): [[x, y] for y in ys],
     distr     = lambda (xs, y): [[x, y] for x in xs],
@@ -117,13 +118,17 @@ matmult == [1, 2 transpose] distr @distl @@dot.
 
 iszero == [id, ~0] =.
 divisible == mod iszero.
-
-euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
+iseven == [id, ~2] divisible.
 
 max == /(< -> 2; 1).
 
 sort == [length, ~2] < -> id; 
         [id, 1] distr [?< @2 sort, ?= @2, ?> @2 sort] concat.
+
+euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
+
+fibs == [~40, 1] < -> tl; [[1,2] +, id] apndl fibs.
+euler2 == [~2,~1] fibs ?iseven /+.
 """
 
 def defs(names): return [program[name] for name in names.split()]
@@ -140,6 +145,12 @@ def defs(names): return [program[name] for name in names.split()]
 #. []
 ## qsort([3,1,4,1,5,9])
 #. [3, 3, 3, 3, 3, 3]
+
+## fibs, euler2 = defs('fibs euler2')
+## fibs([1,1])
+#. [34, 21, 13, 8, 5, 3, 2, 1, 1]
+## euler2(0)
+#. 44
 
 ## divisible([9, 5]), divisible([10, 5]), 
 #. (False, True)
