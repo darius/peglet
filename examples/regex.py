@@ -1,5 +1,5 @@
 """
-Example: parse a regular expression and generate the strings it matches.
+Parse a regular expression and generate the strings it matches.
 Generator from
 http://www.udacity.com/wiki/CS212%20Unit%203%20Code?course=cs212#regex_generatorpy
 http://forums.udacity.com/questions/5008809/unit3-18-startx-paramater-on-genseq-is-a-hack#cs212
