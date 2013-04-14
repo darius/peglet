@@ -108,13 +108,24 @@ factorial == iota /*.
 
 dot == transpose @* \+.
 matmult == [1, 2 transpose] distr @distl @@dot.
+
+iszero == [id, ~0] =.
+divisible == mod iszero.
 """
 notyet = r"""
+euler1 == iota ?([id, ~3] divisible, [id, ~5] divisible] or) /+.
 sort == [length, ~2] < -> id; 
         [1, id] distl [?< @2 sort, ?= @2, ?> @2 sort] concat.
 """
+
+def defs(names): return [program[name] for name in names.split()]
+
 ## FP(examples)
-## factorial, dot, matmult = map(program.get, 'factorial dot matmult'.split())
+## factorial, dot, matmult = defs('factorial dot matmult')
+## divisible, = defs('divisible')
+
+## divisible([9, 5]), divisible([10, 5]), 
+#. (False, True)
 
 ## factorial(0)
 #. 1
