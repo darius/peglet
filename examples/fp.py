@@ -19,6 +19,7 @@ def mk_compose(g, f):  return lambda arg: f(g(arg))
 def mk_map(f):         return lambda arg: map(f, arg)
 def mk_insertl(f):     return lambda arg: insertl(f, arg)
 def mk_insertr(f):     return lambda arg: insertr(f, arg)
+def mk_filter(f):      return lambda arg: filter(f, arg)
 def mk_aref(n):        return lambda arg: arg[n-1]
 def mk_literal(n):     return lambda _: n
 def mk_op(name):       return ops[name]
@@ -40,6 +41,7 @@ term    = factor term              mk_compose
 factor  = @ _ factor               mk_map
         | / _ factor               mk_insertr
         | \\ _ factor              mk_insertl
+        | \? _ factor              mk_filter
         | primary
 
 primary = decimal                  mk_aref
@@ -96,6 +98,8 @@ primitives = dict(
     tl        = lambda xs: xs[1:],
     transpose = lambda arg: zip(*arg),
 )
+primitives['and'] = lambda (x, y): x and y
+primitives['or']  = lambda (x, y): x or y
 
 def function_identity(f):
     if f in (add, sub): return 0
@@ -111,9 +115,10 @@ matmult == [1, 2 transpose] distr @distl @@dot.
 
 iszero == [id, ~0] =.
 divisible == mod iszero.
+
+euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
 """
 notyet = r"""
-euler1 == iota ?([id, ~3] divisible, [id, ~5] divisible] or) /+.
 sort == [length, ~2] < -> id; 
         [1, id] distl [?< @2 sort, ?= @2, ?> @2 sort] concat.
 """
@@ -122,10 +127,12 @@ def defs(names): return [program[name] for name in names.split()]
 
 ## FP(examples)
 ## factorial, dot, matmult = defs('factorial dot matmult')
-## divisible, = defs('divisible')
+## divisible, euler1 = defs('divisible euler1')
 
 ## divisible([9, 5]), divisible([10, 5]), 
 #. (False, True)
+## euler1(9)
+#. 23
 
 ## factorial(0)
 #. 1
