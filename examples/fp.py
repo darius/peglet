@@ -7,17 +7,26 @@ from peglet import Parser
 
 program = {}
 
-primitives = dict(transpose = lambda arg: zip(*arg),
-                  distl = lambda (x, ys): [[x, y] for y in ys],
-                  distr = lambda (xs, y): [[x, y] for x in xs],
-                  iota = lambda n: range(1, n+1),)
+primitives = dict(
+    concat = lambda lists: sum(lists, []),
+    distl = lambda (x, ys): [[x, y] for y in ys],
+    distr = lambda (xs, y): [[x, y] for x in xs],
+    id = lambda x: x,
+    iota = lambda n: range(1, n+1),
+    length = len,
+    tl = lambda xs: xs[1:],
+    transpose = lambda arg: zip(*arg),
+)
 
-add = lambda (x, y): x+y
-sub = lambda (x, y): x-y
-mul = lambda (x, y): x*y
-div = lambda (x, y): x/y
+add = lambda (x, y): x + y
+sub = lambda (x, y): x - y
+mul = lambda (x, y): x * y
+div = lambda (x, y): x / y
+eq  = lambda (x, y): x == y
+lt  = lambda (x, y): x < y
+gt  = lambda (x, y): x > y
 
-ops = {'+': add, '-': sub, '*': mul, '/': div,}
+ops = {'+': add, '-': sub, '*': mul, '/': div, '=': eq, '<': lt, '>': gt}
 
 def function_identity(f):
     if f in (add, sub): return 0
@@ -69,7 +78,7 @@ factor  = @ _ factor               mk_map
 primary = decimal                  mk_aref
         | ~ _ integer              mk_literal
         | name                     mk_call
-        | ([*+/-]) _               mk_op
+        | ([<=*/+-]) _             mk_op
         | \[ _ list \] _           mk_list
         | \( _ exp \) _
 
@@ -88,8 +97,13 @@ _       = \s*
 
 examples = r"""
 factorial == iota /*.
+
 dot == transpose @* \+.
 matmult == [1, 2 transpose] distr @distl @@dot.
+"""
+notyet = r"""
+sort == [length, ~2] < -> id; 
+        [1, id] distl [?< @2 sort, ?= @2, ?> @2 sort] concat.
 """
 ## program = fp_parse(examples)[0]
 ## program.update(primitives)
