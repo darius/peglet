@@ -44,7 +44,7 @@ def insertl(f, xs):
 def insertr(f, xs):
     if not xs: return function_identity(f)
     z = xs[-1]
-    for x in xs[-1::-1]:
+    for x in xs[-2::-1]:
         z = f([x, z])
     return z
 
@@ -87,7 +87,7 @@ _       = \s*
 
 
 examples = r"""
-factorial == iota \*.
+factorial == iota /*.
 dot == transpose @* \+.
 matmult == [1, 2 transpose] distr @distl @@dot.
 """
