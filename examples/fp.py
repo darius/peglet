@@ -120,8 +120,10 @@ divisible == mod iszero.
 
 euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
 
+max == /(< -> 2; 1).
+
 sort == [length, ~2] < -> id; 
-        [1, id] distl [?< @2 sort, ?= @2, ?> @2 sort] concat.
+        [id, 1] distr [?< @2 sort, ?= @2, ?> @2 sort] concat.
 """
 
 def defs(names): return [program[name] for name in names.split()]
@@ -129,6 +131,15 @@ def defs(names): return [program[name] for name in names.split()]
 ## FP(examples)
 ## factorial, dot, matmult = defs('factorial dot matmult')
 ## divisible, euler1 = defs('divisible euler1')
+## qmax, qsort = defs('max sort')
+## qmax([1, 5, 3])
+#. 5
+## qmax([5, 1])
+#. 5
+## qsort([])
+#. []
+## qsort([3,1,4,1,5,9])
+#. [3, 3, 3, 3, 3, 3]
 
 ## divisible([9, 5]), divisible([10, 5]), 
 #. (False, True)
