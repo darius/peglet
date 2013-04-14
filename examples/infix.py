@@ -23,7 +23,7 @@ first build the wrong tree this way, but tagging the parts that are
 wrong (with misassociated()); then we fix them up in reassociate().
 
 It's a hack. I don't see a better way without making peglet more
-complex. (Ideas solicited.)
+complex. (Ideas solicited.) (My parson package handles this nicely.)
 """
 
 from peglet import Parser, hug
