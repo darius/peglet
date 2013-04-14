@@ -49,8 +49,8 @@ def insertr(f, xs):
 fp_parse = Parser(r"""
 program = _ defs $                 mk_program
 
-defs    = def defs | 
-
+defs    = def defs
+        | 
 def     = name == _ exp [.] _      mk_def
 
 exp     = term -> _ term ; _ exp   mk_if
