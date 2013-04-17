@@ -1,5 +1,11 @@
 from peglet import Parser, Unparsable, attempt, hug, join, position
 
+parse_words = Parser(r'words = \W*(\w+) words | ')
+
+# The equivalent re.split() would return extra '' results first and last:
+## parse_words('"Hi, there", he said.')
+#. ('Hi', 'there', 'he', 'said')
+
 def Tag(label):
     return lambda *parts: (label,) + parts
 
