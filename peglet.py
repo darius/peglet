@@ -8,7 +8,7 @@ For example, to parse a tiny subset of HTML:
 
     >>> grammar = r"""
     ... parts = part parts | 
-    ... part  = <(\w+)> parts </\w+> group
+    ... part  = <(\w+)> parts </\w+>   group
     ...       | ([^<]+)
     ... """
     >>> some_html = Parser(grammar, group=lambda *values: values)
@@ -17,20 +17,19 @@ For example, to parse a tiny subset of HTML:
 
 Just as with regular expressions, we write the grammar in a raw string
 (like r"") to preserve backslash characters. This grammar has two
-rules, for `parts` and for `part`. `parts` matches either `part`
-followed by more `parts`, or nothing (the empty string). `part`
-matches either `parts` surrounded by open and close tags, or one or
-more characters different from `<`.
+rules, for `parts` and for `part`. The first rule says `parts` matches
+either `part` followed by more `parts`, or nothing (the empty
+string). `part` matches either `parts` surrounded by open and close
+tags, or one or more characters different from `<`.
 
 The output is built out of regex captures (like `(\w+)`) and semantic
 actions (like `group=lambda *values: values`). Here the `group`
 function is called with the `(\w+)` capture along with the values
 produced by the nested `parts`; then `group`'s return value becomes
 the single value produced for `part`. A successful parse, in general,
-always produces a tuple of values. (So for `part` the result is a
-1-tuple from either `group` or `([^<]+)`; and `parts` produces a tuple
-of any length, either concatenating the tuples from `part` and `parts`
-or producing () for the empty string.)
+always produces a tuple of values. (So `part` produces a 1-tuple from
+either `group` or `([^<]+)`; and `parts` either concatenates tuples
+from `part` and `parts` or produces () for the empty string.)
 
 Prefix matching and error handling
 ----------------------------------
@@ -40,8 +39,8 @@ Like `re.match`, we try to match a prefix of the input:
     >>> some_html("This <tag> won't parse: it lacks a matching close-tag.")
     ('This ',)
 
-To ensure we match the whole input, explicitly match the end with `!.`
-where the `!` means to fail if the match against `.` succeeds:
+To match the whole input, explicitly match the end with `!.` where the
+`!` means to fail if the match against `.` succeeds:
 
     >>> full_grammar = r"html = parts !. " + grammar
     >>> some_html = Parser(full_grammar, group=lambda *values: values)
@@ -52,10 +51,9 @@ Now the ungrammatical input causes an error:
     Traceback (most recent call last):
     Unparsable: ('html', "This <tag> won't parse: it lacks a matching close-tag.", '')
 
-The `Unparsable` exception tells you the string up to the point the
-error was detected at, plus the rest of the string (`''` here, which
-admittedly is not much help). To get `None` from a parse failure
-instead, use `attempt`:
+The `Unparsable` exception tells you the string up to the point where
+the error was detected, plus the rest of the string (`''` here). To
+get `None` from a parse failure instead, use `attempt`:
 
     >>> attempt(some_html, "This <tag> won't parse: it lacks a matching close-tag.")
     >>> attempt(some_html, "<i>Hi</i>")
@@ -84,7 +82,7 @@ identifier that's not a defined rule or action name is an
 error. (So, an incomplete grammar gets you a BadGrammar exception
 instead of a wrong parse.)
 
-Matching a regex token with captures produces a tuple of all the
+Matching a regex token that has captures produces a tuple of all the
 captured strings. Matching a sequence of tokens produces the
 concatenation of the results from each. A semantic action takes all
 the results produced so far for the current rule and replaces them
