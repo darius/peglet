@@ -5,11 +5,10 @@ Peglet extends Python's regular expressions to handle recursive
 grammars. For example, to parse a tiny subset of HTML:
 
 >>> from peglet import Parser
->>> a_little_html = Parser(r"""
-...     parts = part parts | 
-...     part  = <(\w+)> parts </\w+> group
-...           | ([^<]+)
-... """, group=lambda *values: values)
+>>> a_little_html = Parser(r"""parts = part parts | 
+...                            part  = <(\w+)> parts </\w+> group
+...                                  | ([^<]+)
+...                        """, group=lambda *values: values)
 >>> a_little_html("Hello. <p><em>Nesting</em> for <i>the win</i>.</p>")
 ('Hello. ', ('p', ('em', 'Nesting'), ' for ', ('i', 'the win'), '.'))
 
