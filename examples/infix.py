@@ -19,8 +19,8 @@ at the cost of producing the wrong parse tree:
   term = (\d+)
 
 This would parse it like 5-(3-1) instead. So, in the code below, we
-first build the wrong tree this way, but tagging the parts that are
-wrong (with misassociated()); then we fix them up in reassociate().
+parse the wrong way, but fix up the tree as we build it, with 
+reassociate(). Shelter protects subtrees from this reassociation.
 
 It's a hack. I don't see a better way without making peglet more
 complex. (Ideas solicited.) (My parson package handles this nicely.)
@@ -28,30 +28,29 @@ complex. (Ideas solicited.) (My parson package handles this nicely.)
 
 from peglet import Parser, hug
 
-def misassociated(x, op, y):
-    return 'misassoc', x, op, y
+class Shelter:
+    def __init__(self, exp):
+        self.sheltered = expose(exp)
 
-def reassociate(exp):
-    if isinstance(exp, tuple) and exp[0] == 'misassoc':
-        _, t, op1, rhs = exp
-        while isinstance(rhs, tuple) and rhs[0] == 'misassoc':
-            _, u, op2, v = rhs
-            # t <op1> (u <op2> v) ==> (t <op1> u) <op2> v
-            # e.g.    t - (u + v) ==> (t - u) + v
-            t, op1, rhs = (t, op1, u), op2, v
-        exp = t, op1, rhs
-    return exp
+def expose(exp):
+    return exp.sheltered if isinstance(exp, Shelter) else exp
 
-calc = Parser(r"""
+def reassociate(x, op, y):
+    "x-(u-v) => (x-u)-v and recursively."
+    x = expose(x)
+    if isinstance(y, tuple):
+        return reassociate(x, op, y[0]), y[1], expose(y[2])
+    else:
+        return x, op, expose(y)
+
+parse = Parser(r"""
 top  = _ exp0 $
 
-exp0 = mis0                  reassociate
-mis0 = exp1 ([+-]) _ mis0    misassociated
-     | exp1
+exp0 = exp1 ([+-]) _ exp0    reassociate
+     | exp1                  Shelter
 
-exp1 = mis1                  reassociate
-mis1 = exp2 ([*/%]) _ mis1   misassociated
-     | exp2
+exp1 = exp2 ([*/%]) _ exp1   reassociate
+     | exp2                  Shelter
 
 exp2 = term (\^) _ exp2      hug
      | term
@@ -64,22 +63,26 @@ _    = \s*
 """, 
               int=int,
               hug=hug,
-              misassociated=misassociated,
+              Shelter=Shelter,
               reassociate=reassociate)
+
+def calc(s):
+    exp, = parse(s)
+    return expose(exp)
 
 # So, operators are left-associative except ^ which associates to the right.
 
 ## calc('3')
-#. (3,)
+#. 3
 ## calc('3-1')
-#. ((3, '-', 1),)
-## calc('3-2-1')
-#. (((3, '-', 2), '-', 1),)
+#. (3, '-', 1)
+## calc('5-4-3-2-1')
+#. ((((5, '-', 4), '-', 3), '-', 2), '-', 1)
 ## calc('3/1/1')
-#. (((3, '/', 1), '/', 1),)
+#. ((3, '/', 1), '/', 1)
 ## calc('3-1-(1-2)')
-#. (((3, '-', 1), '-', (1, '-', 2)),)
+#. ((3, '-', 1), '-', (1, '-', 2))
 ## calc('2 - 4/5')
-#. ((2, '-', (4, '/', 5)),)
+#. (2, '-', (4, '/', 5))
 ## calc('2^3^4')
-#. ((2, '^', (3, '^', 4)),)
+#. (2, '^', (3, '^', 4))
