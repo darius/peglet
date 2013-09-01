@@ -77,10 +77,10 @@ making up the rules must be whitespace-separated. Each token (besides
 preceded by '!' for negation.) Note that '=' or '|' can appear inside
 a regex token, but there it must not be surrounded by whitespace.
 
-A regex token is either /<chars>/ or any non-identifier; an
-identifier that's not a defined rule or action name is an
-error. (So, an incomplete grammar gets you a BadGrammar exception
-instead of a wrong parse.)
+A regex token is either /<chars>/ or any non-identifier; an identifier
+that's not a defined rule or action name is an error. (So, forgetting
+to define a rule gets you a BadGrammar exception instead of a wrong
+parse.)
 
 Matching a regex token that has captures produces a tuple of all the
 captured strings. Matching a sequence of tokens produces the
@@ -89,7 +89,8 @@ the results produced so far for the current rule and replaces them
 with one value, the result of calling the function defined for the
 action (supplied as a keyword argument to the Parser constructor).
 Finally, `!foo` matches when `foo` fails to match; then it consumes no
-input and produces `()`. (Thus `!!foo` serves for lookahead: it
+input and produces `()`. `foo` can be any kind of token: rule, regex,
+action, or negated token again. (Thus `!!foo` serves for lookahead: it
 matches when `foo` matches, but again consumes no input and produces
 only `()`.)
 
