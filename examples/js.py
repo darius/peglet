@@ -1,4 +1,7 @@
-# Adapted from http://hepunx.rl.ac.uk/~adye/jsspec11/llr.htm
+"""
+JavaScript
+Adapted from http://hepunx.rl.ac.uk/~adye/jsspec11/llr.htm
+"""
 
 from peglet import Parser, hug, join
 

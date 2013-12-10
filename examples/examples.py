@@ -1,3 +1,7 @@
+"""
+A bunch of small examples, some of them from the LPEG documentation.
+"""
+
 from peglet import Parser, Unparsable, attempt, hug, join, position
 
 parse_words = Parser(r'words = \W*(\w+) words | ')
