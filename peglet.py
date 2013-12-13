@@ -153,11 +153,6 @@ class BadGrammar(Exception):
 class Unparsable(Exception):
     "An attempted parse failed because the input did not match the grammar."
 
-def attempt(parse, *args, **kwargs):
-    "Call a parser, but return None on failure instead of raising Unparsable."
-    try: return parse(*args, **kwargs)
-    except Unparsable: return None
-
 def _parse(rules, actions, rule, text):
     # Each function takes a position pos (and maybe a values tuple
     # vals) and returns either (far, pos1, vals1) on success or (far,
@@ -198,6 +193,21 @@ def _parse(rules, actions, rule, text):
     far, pos, vals = parse_rule(rule, 0)
     if pos is None: raise Unparsable(rule, text[:far], text[far:])
     else: return vals
+
+# Conveniences
+
+def attempt(parser, *args, **kwargs):
+    "Call a parser, but return None on failure instead of raising Unparsable."
+    try: return parser(*args, **kwargs)
+    except Unparsable: return None
+
+def OneResult(parser):
+    "Parse like parser, but return exactly one result, not a tuple."
+    def parse(text):
+        results = parser(text)
+        assert len(results) == 1, "Expected one result but got %r" % (results,)
+        return results[0]
+    return parse
 
 # Some often-used actions:
 
