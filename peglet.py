@@ -156,7 +156,7 @@ class Unparsable(Exception):
 def _parse(rules, actions, rule, text):
     # Each function takes a position pos (and maybe a values tuple
     # vals) and returns either (far, pos1, vals1) on success or (far,
-    # None, ignore) on failure (where far is the rightmost position
+    # None, garbage) on failure (where far is the rightmost position
     # reached in the attempt).
 
     @_memo
