@@ -1,4 +1,4 @@
-"""
+r"""
 Parsing infix expressions that can associate left-to-right, like
    5 - 3 - 1 (meaning: (5 - 3) - 1)
 is tricky, I'm afraid, because here's the natural way to express
