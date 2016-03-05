@@ -3,7 +3,7 @@ A concatenative variant of John Backus's FP language.
 http://en.wikipedia.org/wiki/FP_%28programming_language%29
 """
 
-from peglet import Parser
+from peglet import Parser, join
 
 program = {}
 
@@ -24,6 +24,8 @@ def mk_aref(n):        return (lambda arg: arg[n-1]) if 0 < n else (lambda arg: 
 def mk_literal(n):     return lambda _: n
 def mk_op(name):       return ops[name]
 def mk_list(*exps):    return lambda arg: [f(arg) for f in exps]
+
+escape = lambda s: s.decode('unicode-escape')
 
 fp_parse = Parser(r"""
 program = _ defs !.
@@ -46,6 +48,7 @@ factor  = @ _ factor               mk_map
 
 primary = integer                  mk_aref
         | ~ _ integer              mk_literal
+        | string                   mk_literal
         | name                     mk_call
         | ([<=>*+-]) !opchar _     mk_op
         | \[ _ list \] _           mk_list
@@ -61,10 +64,16 @@ decimal = (\d+) _                  int
 integer = (-?\d+) _                int
 name    = ([A-Za-z]\w*) _
 
+string  = " schars " _             join
+schars  = schar schars
+        |
+schar   = ([^\x00-\x1f"\\])
+        | \\(["\\])
+        | (\\[bfnrt])              escape
+
 _       = \s*
 
 """, int=int, **globals())
-
 
 def insertl(f, xs):
     if not xs: return function_identity(f)
@@ -97,9 +106,12 @@ primitives = dict(
     div       = div,
     id        = lambda x: x,
     iota      = lambda n: range(1, n+1),
+    join      = lambda (strs, sep): sep.join(strs),
     length    = len,
     mod       = mod,
     rev       = lambda xs: xs[::-1],
+    slice     = lambda (xs, n): [xs[:n-1], xs[n-1], xs[n:]],
+    split     = lambda (s, sep): s.split(sep),
     tl        = lambda xs: xs[1:],
     transpose = lambda arg: zip(*arg),
 )
@@ -109,6 +121,7 @@ primitives['or']  = lambda (x, y): x or y
 def function_identity(f):
     if f in (add, sub): return 0
     if f in (mul, div): return 1
+    # XXX could add concat, and, or, lt, gt, ...
     raise Exception("No known identity element", f)
 
 
@@ -182,3 +195,32 @@ def defs(names): return [program[name] for name in names.split()]
 #. [[10, 12], [14, 16]]
 ## matmult([ [[0,1],[1,0]], [[5,6],[7,8]] ])
 #. [[7, 8], [5, 6]]
+
+
+# Inspired by James Morris, "Real programming in functional
+# languages", figure 1.
+
+kwic = r"""
+kwic      == [id, "\n"] split  kwiclines  [id, "\n"] join.
+kwiclines == @words @generate concat sort @2.
+generate  == [id, length iota] distl @label.
+label     == slice [2,
+                    [1, [["<",2,">"] strcat], 3] concat  unwords].
+
+words     == [id, " "] split.
+unwords   == [id, " "] join.
+strcat    == [id, ""] join.
+
+sort == [length, ~2] < -> id; 
+        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] concat.
+"""
+
+## FP(kwic)
+## kwic, kwiclines = defs('kwic kwiclines')
+## print kwic("leaves of grass\nflowers of evil")
+#. flowers of <evil>
+#. <flowers> of evil
+#. leaves of <grass>
+#. <leaves> of grass
+#. flowers <of> evil
+#. leaves <of> grass
