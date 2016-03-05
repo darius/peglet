@@ -202,6 +202,7 @@ def defs(names): return [program[name] for name in names.split()]
 
 kwic = r"""
 kwic      == [id, "\n"] split  kwiclines  [id, "\n"] join.
+
 kwiclines == @words @generate concat sort @2.
 generate  == [id, length iota] distl @label.
 label     == slice [2,
