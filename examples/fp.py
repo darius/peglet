@@ -100,10 +100,11 @@ ops = {'+': add, '-': sub, '*': mul, '=': eq, '<': lt, '>': gt}
 primitives = dict(
     apndl     = lambda (x, xs): [x] + xs,
     apndr     = lambda (xs, x): xs + [x],
-    concat    = lambda lists: sum(lists, []),
+    chain     = lambda lists: sum(lists, []),
     distl     = lambda (x, ys): [[x, y] for y in ys],
     distr     = lambda (xs, y): [[x, y] for x in xs],
     div       = div,
+    enumerate = lambda xs: [(x, i) for i,x in enumerate(xs, 1)], # XXX unused
     id        = lambda x: x,
     iota      = lambda n: range(1, n+1),
     join      = lambda (strs, sep): sep.join(strs),
@@ -121,7 +122,7 @@ primitives['or']  = lambda (x, y): x or y
 def function_identity(f):
     if f in (add, sub): return 0
     if f in (mul, div): return 1
-    # XXX could add concat, and, or, lt, gt, ...
+    # XXX could add chain, and, or, lt, gt, ...
     raise Exception("No known identity element", f)
 
 
@@ -138,7 +139,7 @@ iseven == [id, ~2] divisible.
 max == /(< -> 2; 1).
 
 sort == [length, ~2] < -> id; 
-        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] concat.
+        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] chain.
 
 euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
 
@@ -203,17 +204,17 @@ def defs(names): return [program[name] for name in names.split()]
 kwic = r"""
 kwic      == [id, "\n"] split  kwiclines  [id, "\n"] join.
 
-kwiclines == @words @generate concat sort @2.
+kwiclines == @words @generate chain sort @2.
 generate  == [id, length iota] distl @label.
 label     == slice [2,
-                    [1, [["<",2,">"] strcat], 3] concat  unwords].
+                    [1, [["<",2,">"] strcat], 3] chain  unwords].
 
 words     == [id, " "] split.
 unwords   == [id, " "] join.
 strcat    == [id, ""] join.
 
 sort == [length, ~2] < -> id; 
-        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] concat.
+        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] chain.
 """
 
 ## FP(kwic)
