@@ -201,7 +201,7 @@ def defs(names): return [program[name] for name in names.split()]
 # Inspired by James Morris, "Real programming in functional
 # languages", figure 1.
 
-kwic = r"""
+kwic_program = r"""
 kwic      == lines split  kwiclines  lines join.
 
 kwiclines == @(words split generate) chain sort @2.
@@ -217,8 +217,8 @@ sort == [length, ~2] < -> id;
         [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] chain.
 """
 
-## FP(kwic)
-## kwic, kwiclines = defs('kwic kwiclines')
+## FP(kwic_program)
+## kwic, = defs('kwic')
 ## print kwic("leaves of grass\nflowers of evil")
 #. flowers of <evil>
 #. <flowers> of evil
