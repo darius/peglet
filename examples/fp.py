@@ -112,6 +112,7 @@ primitives = dict(
     mod       = mod,
     rev       = lambda xs: xs[::-1],
     slice     = lambda (xs, n): [xs[:n-1], xs[n-1], xs[n:]],
+    sort      = sorted,
     split     = lambda (s, sep): s.split(sep),
     tl        = lambda xs: xs[1:],
     transpose = lambda arg: zip(*arg),
@@ -138,8 +139,8 @@ iseven == [id, ~2] divisible.
 
 max == /(< -> 2; 1).
 
-sort == [length, ~2] < -> id; 
-        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] chain.
+qsort == [length, ~2] < -> id; 
+         [id, 1] distr [?< @1 qsort, ?= @1, ?> @1 qsort] chain.
 
 euler1 == iota ?([[id, ~3] divisible, [id, ~5] divisible] or) /+.
 
@@ -155,7 +156,7 @@ def defs(names): return [program[name] for name in names.split()]
 ## FP(examples)
 ## factorial, dot, matmult = defs('factorial dot matmult')
 ## divisible, euler1 = defs('divisible euler1')
-## qmax, qsort = defs('max sort')
+## qmax, qsort = defs('max qsort')
 ## qmax([1, 5, 3])
 #. 5
 ## qmax([5, 1])
@@ -212,9 +213,6 @@ label     == slice [2,
 chars == [id, ""].
 words == [id, " "].
 lines == [id, "\n"].
-
-sort == [length, ~2] < -> id; 
-        [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] chain.
 """
 
 ## FP(kwic_program)
