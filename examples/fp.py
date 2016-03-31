@@ -202,16 +202,16 @@ def defs(names): return [program[name] for name in names.split()]
 # languages", figure 1.
 
 kwic = r"""
-kwic      == [id, "\n"] split  kwiclines  [id, "\n"] join.
+kwic      == lines split  kwiclines  lines join.
 
-kwiclines == @words @generate chain sort @2.
+kwiclines == @(words split generate) chain sort @2.
 generate  == [id, length iota] distl @label.
 label     == slice [2,
-                    [1, [["<",2,">"] strcat], 3] chain  unwords].
+                    [1, [["<",2,">"] chars join], 3] chain  words join].
 
-words     == [id, " "] split.
-unwords   == [id, " "] join.
-strcat    == [id, ""] join.
+chars == [id, ""].
+words == [id, " "].
+lines == [id, "\n"].
 
 sort == [length, ~2] < -> id; 
         [id, 1] distr [?< @1 sort, ?= @1, ?> @1 sort] chain.
