@@ -30,7 +30,13 @@ combinator library, `parson <https://github.com/darius/parson>`_.
 For more, see `the examples
 <https://github.com/darius/peglet/tree/master/examples>`_ or the
 module doc in `the code
-<https://github.com/darius/peglet/blob/master/peglet.py>`_.
+<https://github.com/darius/peglet/blob/master/peglet.py>`_. Other
+programs using this include `bicicleta.py
+<https://github.com/darius/bicicleta.py>`_ and `.js
+<https://github.com/darius/bicicleta.js>`_,
+a `logic puzzle solver
+<https://github.com/darius/mccarthy-to-bryant/blob/master/puzzler.py>`_,
+and the lexer for `unitcalc <https://github.com/darius/unitcalc>`_.
 
 
 Installing it
